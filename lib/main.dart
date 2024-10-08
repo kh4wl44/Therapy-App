@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:lati_project/home_page.dart';
 import 'package:lati_project/login.dart';
 import 'package:lati_project/signup.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         child: child!,
       );
     },
-      home: Login(),
+      home: HomePage(),
   );
 }}
 
