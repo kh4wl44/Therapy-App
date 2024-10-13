@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:lati_project/features/auth/screens/Register/landingpage.dart';
-import 'package:lati_project/features/auth/screens/Register/login.dart';
-import 'package:lati_project/features/auth/screens/Register/signup.dart';
+import 'package:lati_project/login.dart';
+import 'package:lati_project/signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +19,7 @@ class MyApp extends StatelessWidget {
         child: child!,
       );
     },
-      home: LandingPage(),
+      home: Login(),
   );
 }}
 
