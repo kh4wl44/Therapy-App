@@ -48,6 +48,7 @@ class _ClientProfileState extends State<ClientProfile> {
       appBar: AppBar(
         title: Text("الملف الشخصي", style: GoogleFonts.almarai(color: Color(0xff5A3D5C))),
         backgroundColor: Color(0xffF4D7F4),
+        iconTheme: IconThemeData(color: Color(0xff5A3D5C)),
       ),
       body: Center(
         child: Padding(
