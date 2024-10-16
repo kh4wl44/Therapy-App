@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../home_page.dart';
+
 
 
 class PrefferedLanguage extends StatelessWidget {
@@ -56,7 +58,7 @@ class PrefferedLanguage extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    //Get.to(() => HomePage());
+                    Get.to(() => HomePage());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xff561789),

@@ -32,6 +32,9 @@ dependencies:
     sdk: flutter
   get:
   animated_text_kit: ^4.2.2
+  intl: ^0.17.0
+  http: ^1.2.2
+  table_calendar: ^3.0.0
 
 
 
