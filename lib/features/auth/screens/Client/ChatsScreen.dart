@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:get/get.dart'; // Import GetX for navigation
-import 'package:lati_project/features/auth/screens/SearchScreen.dart';
+import 'package:get/get.dart';
+
+import 'SearchScreen.dart'; // Import GetX for navigation
 
 class ChatsScreen extends StatelessWidget {
   @override

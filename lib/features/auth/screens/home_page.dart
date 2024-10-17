@@ -1,16 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lati_project/features/auth/screens/ChatsScreen.dart';
-import 'package:lati_project/features/auth/screens/SessionsScreen.dart';
-import 'package:lati_project/features/auth/screens/NotificationsScreen.dart';
 
-import 'ClientProfile.dart';
-import 'FavoritesScreen.dart';
-import 'WriteJournal.dart';
-import 'SearchScreen.dart';
+import 'Client/ChatsScreen.dart';
+import 'Client/ClientProfile.dart';
+import 'Client/ClientSessions.dart';
+import 'Client/FavoritesScreen.dart';
+import 'Client/JournalsScreen.dart';
+import 'Client/NotificationsScreen.dart';
+import 'Client/SearchScreen.dart';
+import 'Client/WriteJournal.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Key for the scaffold
   final String username = "محمد";
   Color backgroundColor = Colors.white.withOpacity(0.92);
   int _selectedIndex = 0; // Track the selected index
@@ -32,11 +34,10 @@ class _HomePageState extends State<HomePage> {
 
     switch (index) {
       case 0:
-        //Get.to(() => HomePage()); // Replace with actual HomeScreen
+      // Get.to(() => HomePage()); // Replace with actual HomeScreen
         break;
       case 1:
         Get.to(() => SearchScreen())?.then((_) {
-          // Reset the selected index when returning from SearchScreen
           setState(() {
             _selectedIndex = 0; // Set back to the home index
           });
@@ -48,7 +49,6 @@ class _HomePageState extends State<HomePage> {
             _selectedIndex = 0;
           });
         });
-
         break;
       case 3:
         Get.to(() => ChatsScreen())?.then((_) {
@@ -56,7 +56,6 @@ class _HomePageState extends State<HomePage> {
             _selectedIndex = 0;
           });
         });
-
         break;
       case 4:
         Get.to(() => SessionsScreen())?.then((_) {
@@ -64,7 +63,6 @@ class _HomePageState extends State<HomePage> {
             _selectedIndex = 0;
           });
         });
-
         break;
     }
   }
@@ -72,7 +70,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      key: _scaffoldKey, // Set the key for the Scaffold
       appBar: AppBar(
         backgroundColor: Color(0xffF4D7F4),
         automaticallyImplyLeading: false,
@@ -83,7 +81,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Get.to(() => ClientProfile());
+                  // Open the drawer when tapped
+                  _scaffoldKey.currentState?.openDrawer();
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 5),
@@ -115,13 +114,53 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(
                   Icons.notifications_rounded,
                   size: 35,
-                    color: hasNewNotifications ? Colors.purple : Colors.black38,)
+                  color: hasNewNotifications ? Colors.purple : Colors.black38,
+                ),
               ),
             ],
           ),
         ),
       ),
-
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.only(top: 50),
+          children: <Widget>[
+            // DrawerHeader(
+            //   decoration: BoxDecoration(
+            //     color: Color(0xffF4D7F4),
+            //   ),
+            //   child: Text(
+            //     'القائمة',
+            //     style: GoogleFonts.almarai(textStyle: TextStyle(
+            //       color: Colors.black,
+            //       fontSize: 24,
+            //     ),)
+            //   ),
+            // ),
+            ListTile(
+              title: Text('الصفحة الشخصية', style: GoogleFonts.almarai( fontSize: 20, color: Color(0xff5A3D5C)),),
+              onTap: () {
+                // Handle navigation to ClientProfile
+                Get.to(() => ClientProfile());
+                //Navigator.pop(context); // Close the drawer
+              },
+            ),
+            ListTile(
+              title: Text('كتابة يوميات جديدة', style: GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),),
+              onTap: () {
+                Get.to(WriteJournal());
+              },
+            ),
+            ListTile(
+              title: Text('عرض اليوميات', style: GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),),
+              onTap: () {
+                Get.to(() => JournalScreen(journals: [],));
+              },
+            ),
+            // Add more drawer items as needed
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           color: backgroundColor,
@@ -129,7 +168,6 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: GestureDetector(
@@ -163,10 +201,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
-
               SizedBox(height: 30),
-
               Padding(
                 padding: const EdgeInsets.only(top: 30, bottom: 10, right: 40),
                 child: Align(
@@ -226,22 +261,22 @@ class _HomePageState extends State<HomePage> {
         children: [
           Icon(
             icon,
-            color: isSelected ? Colors.purple : Colors.grey.shade500,
+            color: isSelected ? Colors.purple : Colors.grey.shade600,
             size: 35, // Adjust icon size
           ),
           Text(
             label,
-            style: GoogleFonts.almarai( textStyle: TextStyle(
-              color: isSelected ? Colors.purple : Colors.grey,
-              fontSize: 16, // Adjust font size
+            style: GoogleFonts.almarai(
+              textStyle: TextStyle(
+                color: isSelected ? Colors.purple : Colors.grey.shade600,
+                fontSize: 16, // Adjust font size
+              ),
             ),
-            )
           ),
         ],
       ),
     );
   }
-
 }
 
 class MoodRow extends StatelessWidget {
@@ -255,7 +290,6 @@ class MoodRow extends StatelessWidget {
         MoodIconButton(icon: Icons.sentiment_neutral, label: 'معتدل', color: Color(0xFFF36A92)),
         MoodIconButton(icon: Icons.sentiment_dissatisfied, label: 'غاضب', color: Color(0xFFFF0000)),
         MoodIconButton(icon: Icons.sentiment_very_dissatisfied, label: 'حزين', color: Color(0xFF4278A4)),
-
       ],
     );
   }

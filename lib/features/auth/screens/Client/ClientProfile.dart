@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lati_project/features/auth/screens/JournalsScreen.dart';
-import 'package:lati_project/features/auth/screens/WriteJournal.dart';
+
+import 'JournalsScreen.dart';
+import 'WriteJournal.dart';
 // import 'journal_screen.dart'; // Adjust the import path as necessary
 // import 'write_journal.dart'; // Adjust the import path as necessary
 
@@ -59,7 +60,7 @@ class _ClientProfileState extends State<ClientProfile> {
               // صورة المستخدم
               CircleAvatar(
                 radius: 60,
-                backgroundImage: NetworkImage(imageUrl),
+                backgroundImage: AssetImage('lib/images/download (1).jpg'), // Use AssetImage directly
               ),
               SizedBox(height: 20),
 
@@ -89,31 +90,6 @@ class _ClientProfileState extends State<ClientProfile> {
               SizedBox(height: 30),
 
               // زر كتابة يوميات جديدة
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff5A3D5C),
-                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                ),
-                onPressed: _navigateToWriteJournal,
-                child: Text(
-                  "كتابة يوميات جديدة",
-                  style: GoogleFonts.almarai(color: Colors.white),
-                ),
-              ),
-              SizedBox(height: 10),
-
-              // زر عرض اليوميات
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff5A3D5C),
-                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                ),
-                onPressed: _navigateToJournalScreen,
-                child: Text(
-                  "عرض اليوميات",
-                  style: GoogleFonts.almarai(color: Colors.white),
-                ),
-              ),
             ],
           ),
         ),
