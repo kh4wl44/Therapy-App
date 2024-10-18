@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/userType.dart';
+import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart'; // Import your main content page
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -22,9 +24,22 @@ class _LandingPageState extends State<LandingPage> {
       });
       // Navigate after the fade-out animation duration
       Timer(Duration(seconds: 2), () {
-        Get.to(() => UserType()); // Navigate to the next screen
+       checkLoginStatus(); // Navigate to the next screen
       });
     });
+  }
+
+  void checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
+    if (isLoggedIn) {
+      // User is already logged in, navigate to main content
+      Get.offAll(() => ClientTypes()); // Replace with your main content page
+    } else {
+      // User is not logged in, navigate to UserType page
+      Get.to(() => UserType());
+    }
   }
 
   @override

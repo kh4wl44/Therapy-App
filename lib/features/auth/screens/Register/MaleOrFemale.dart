@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/chooseTopicsToShare.dart';
+import '../../../../api/registration_controller.dart';
 import 'ClientTypes.dart';
 
 class MaleOrFemale extends StatelessWidget {

@@ -7,11 +7,18 @@ import 'package:get/get.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'api/registration_controller.dart';
+
 void main() async{
    WidgetsFlutterBinding.ensureInitialized();
-  await Get.putAsync(() => SharedPreferences.getInstance());
-  Get.put(ApiService());
-  Get.put(RegistrationController());
+   final sharedPreferences = await SharedPreferences.getInstance();
+  Get.put(sharedPreferences);
+
+  // Initialize RegistrationController
+  final registrationController = Get.put(RegistrationController());
+
+  // Initialize ApiService with RegistrationController
+  Get.put(ApiService(registrationController));
   runApp(MyApp());
 }
 

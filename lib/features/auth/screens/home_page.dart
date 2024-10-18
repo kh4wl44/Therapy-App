@@ -11,7 +11,7 @@ import 'Client/JournalsScreen.dart';
 import 'Client/NotificationsScreen.dart';
 import 'Client/SearchScreen.dart';
 import 'Client/WriteJournal.dart';
-
+import 'package:logger/logger.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +21,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final Logger _logger = Logger();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Key for the scaffold
   final String username = "محمد";
   Color backgroundColor = Colors.white.withOpacity(0.92);
@@ -173,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                 child: GestureDetector(
                   onTap: () {
                     Get.to(WriteJournal());
-                    print("Container tapped!");
+                    _logger.i("Container tapped!");
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -301,7 +303,7 @@ class MoodIconButton extends StatelessWidget {
   final Color color;
 
   MoodIconButton({required this.icon, required this.label, required this.color});
-
+  final Logger _logger = Logger();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -313,7 +315,7 @@ class MoodIconButton extends StatelessWidget {
             icon: Icon(icon, size: 45, color: color),
             onPressed: () {
               Get.to(WriteJournal());
-              print('$label button pressed');
+              _logger.i('$label button pressed');
             },
           ),
           Text(label, style: GoogleFonts.almarai(textStyle: TextStyle(fontSize: 16, color: color))),

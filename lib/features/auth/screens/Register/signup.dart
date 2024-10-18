@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:lati_project/api/api_service.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 import 'login.dart';
-
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -19,24 +19,60 @@ class Signup extends StatefulWidget {
 }
 
 
-
+final Logger _logger = Logger();
 class SignupState extends State<Signup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
-  final ApiService _apiService = ApiService();
+  late final ApiService _apiService;
       
+
+      
+  @override
+  void initState() {
+    super.initState();
+    _apiService = Get.find<ApiService>();
+  }
+
       Future<void> saveUserInfo(String name, String email, bool isTherapist ) async {
+        try{
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_name', name);
-    await prefs.setString('user_email', email);
-    await prefs.setBool('is_logged_in', true);
-    await prefs.setBool('is_therapist', isTherapist);
+    bool nameSaved = await prefs.setString('user_name', name);
+    _logger.i('user_name saved: $nameSaved');
+    
+    bool emailSaved = await prefs.setString('user_email', email);
+    _logger.i('user_email saved: $emailSaved');
+    
+    bool loggedInSaved = await prefs.setBool('is_logged_in', true);
+    _logger.i('is_logged_in saved: $loggedInSaved');
+    
+    bool therapistSaved = await prefs.setBool('is_therapist', isTherapist);
+    _logger.i('is_therapist saved: $therapistSaved');
+
+    // Check if all saves were successful
+    if (nameSaved && emailSaved && loggedInSaved && therapistSaved) {
+      _logger.i('All user info saved successfully');
+      
+    } else {
+      _logger.i('Some user info failed to save');
+      
+  }} catch (e) {
+    _logger.i('Error saving user info: $e');
+    
+  }
+    
   }
 
  
-
+ Future<void> checkSavedInfo() async {
+  final prefs = await SharedPreferences.getInstance();
+  _logger.i('Checking saved user info:');
+  _logger.i('Saved user name: ${prefs.getString('user_name')}');
+  _logger.i('Saved user email: ${prefs.getString('user_email')}');
+  _logger.i('Is logged in: ${prefs.getBool('is_logged_in')}');
+  _logger.i('Is therapist: ${prefs.getBool('is_therapist')}');
+}
 
       void _handleSignup() async {
 
@@ -67,21 +103,27 @@ class SignupState extends State<Signup> {
       username: usernameController.text,
       email: emailController.text,
       password: passwordController.text,
-      isTherapist: false, // Set this based on user selection if applicable
+      isTherapist:widget.isTherapist ?? false, // Set this based on user selection if applicable
     );
 
     final result = await _apiService.signupUser(userRequest);
 
     if (result['success']) {
+      _logger.i('signup success, attempting to save user info');
       await saveUserInfo(usernameController.text, emailController.text, widget.isTherapist ?? false);
+      await checkSavedInfo();
       Get.snackbar('Success', result['message']);
       Get.to(() => ClientTypes());
     } else {
+      _logger.i('Error response: ${result['message']}');
       Get.snackbar('Error', result['message']);
       if (result['statusCode'] == 400) {
-        print('There was a problem with the data sent to the server. Please check your inputs.');
+        _logger.i('There was a problem with the data sent to the server. Please check your inputs.');
       }
     }
+
+
+   
   }
 
   // Reusable TextField widget
