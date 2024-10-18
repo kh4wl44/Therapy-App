@@ -12,27 +12,28 @@ class Signup extends StatefulWidget {
 
   final bool? isTherapist;
 
-   Signup({Key? key, required this.isTherapist}) : super(key: key);
-       
-  @override
-  _SignupState createState() => _SignupState();
+   const Signup({super.key, required this.isTherapist});
+    
+    @override
+   State<Signup> createState() => SignupState();
 }
 
-Future<void> saveUserInfo(String name, String email, bool isTherapist ) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_name', name);
-    await prefs.setString('user_email', email);
-    await prefs.setBool('is_logged_in', true);
-    await prefs.setBool('is_therapist', isTherapist);
-  }
 
-class _SignupState extends State<Signup> {
+
+class SignupState extends State<Signup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final ApiService _apiService = ApiService();
       
+      Future<void> saveUserInfo(String name, String email, bool isTherapist ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', name);
+    await prefs.setString('user_email', email);
+    await prefs.setBool('is_logged_in', true);
+    await prefs.setBool('is_therapist', isTherapist);
+  }
 
  
 
@@ -61,7 +62,6 @@ class _SignupState extends State<Signup> {
     }
 
     
-
       final userRequest = UserSignUpRequest(
       name: usernameController.text, // Assuming username is used as name
       username: usernameController.text,

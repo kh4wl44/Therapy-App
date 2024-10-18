@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../api/api_service.dart';
 import 'MaleOrFemale.dart';
@@ -9,7 +9,7 @@ import 'MaleOrFemale.dart';
 
 class RegistrationController extends GetxController {
   late ApiService apiService;
-  final RxBool isLoading = false.obs;
+  
 
    final RxString sessionType = ''.obs;
   final RxString gender = ''.obs;
@@ -24,7 +24,24 @@ class RegistrationController extends GetxController {
   }
 
 
-  // ... existing code ...
+   Future<void> loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    sessionType.value = prefs.getString('sessionType') ?? '';
+    gender.value = prefs.getString('gender') ?? '';
+    therapistPreference.value = prefs.getString('therapistPreference') ?? '';
+    topics.value = prefs.getStringList('topics') ?? [];
+    languagePreference.value = prefs.getString('languagePreference') ?? '';
+  }
+
+  Future<void> savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('sessionType', sessionType.value);
+    await prefs.setString('gender', gender.value);
+    await prefs.setString('therapistPreference', therapistPreference.value);
+    await prefs.setStringList('topics', topics);
+    await prefs.setString('languagePreference', languagePreference.value);
+  }
+
 
   void updateTherapistPreference(String preference) {
     therapistPreference.value = preference;
@@ -49,12 +66,12 @@ class RegistrationController extends GetxController {
   // Add other update methods as needed
 
   Future<void> sendClientPreferences() async {
-    if (sessionType.isEmpty || gender.isEmpty) {
+    if (sessionType.isEmpty || gender.isEmpty || therapistPreference.isEmpty || topics.isEmpty || languagePreference.isEmpty) {
       Get.snackbar('Error', 'Please complete all required fields');
       return;
     }
 
-    isLoading.value = true;
+    
     try {
        final userPreferences = UserPreferences(
         sessionType: sessionType.value,
@@ -65,23 +82,61 @@ class RegistrationController extends GetxController {
         // ... other fields ...
       );
       
-      final token = 'your_auth_token_here'; // You should retrieve this securely
+      final token = await getAuthToken();
       
       final result = await apiService.sendClientPreferences(userPreferences, token);
+      
        if (result['success']) {
         Get.snackbar('Success', 'Preferences updated successfully');
-        // Navigate to the next screen or home screen
-        // Get.offAll(() => HomeScreen());
+        // Clear preferences after successful submission
+        await savePreferences();
+        await setRegistrationComplete();
+        // Navigate to the home screen or dashboard
+        // Get.offAll(() => HomePage());
       } else {
         Get.snackbar('Error', result['message']);
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to update preferences');
-    } finally {
-      isLoading.value = false;
     }
   }
+    Future<void> clearPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('sessionType');
+    await prefs.remove('gender');
+    await prefs.remove('therapistPreference');
+    await prefs.remove('topics');
+    await prefs.remove('languagePreference');
+  
+  
+
+   sessionType.value = '';
+    gender.value = '';
+    therapistPreference.value = '';
+    topics.clear();
+    languagePreference.value = '';
+  }
+
+  Future<String> getAuthToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token') ?? '';
+  }
+
+  
+
+  Future<bool> isRegistrationComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('registration_complete') ?? false;
+  }
+
+  Future<void> setRegistrationComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('registration_complete', true);
+  }
 }
+
+
+
 
 class ClientTypes extends StatelessWidget {
  const ClientTypes({super.key});

@@ -5,10 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 import '../home_page.dart';
 
-
-
 class PrefferedLanguage extends StatelessWidget {
-
   final RegistrationController controller = Get.find<RegistrationController>();
 
   PrefferedLanguage({super.key});
@@ -57,11 +54,11 @@ class PrefferedLanguage extends StatelessWidget {
               SizedBox(height: 20),
               CustomButton('English', 'en'),
               SizedBox(height: 40),
-
               SizedBox(height: 260),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await controller.sendClientPreferences();
                     Get.to(() => HomePage());
                   },
                   style: ElevatedButton.styleFrom(
@@ -92,7 +89,7 @@ class PrefferedLanguage extends StatelessWidget {
 class CustomButton extends StatefulWidget {
   final String title;
   final String language;
-  CustomButton(this.title,this.language);
+  CustomButton(this.title, this.language);
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
@@ -103,11 +100,14 @@ class _CustomButtonState extends State<CustomButton> {
 
   @override
   Widget build(BuildContext context) {
+    final RegistrationController controller =
+        Get.find<RegistrationController>();
     return ElevatedButton(
       onPressed: () {
         setState(() {
           isPressed = !isPressed; // Toggle the pressed state
         });
+        controller.updateLanguagePreference(widget.language);
       },
       style: ElevatedButton.styleFrom(
         minimumSize: Size(350, 50),

@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'package:lati_project/api/api_service.dart';
 import 'package:lati_project/features/auth/screens/Register/landingpage.dart';
-
+import 'package:lati_project/features/auth/screens/home_page.dart'; 
 import 'package:get/get.dart';
-
+import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async{
-   Get.put(ApiService());
+   WidgetsFlutterBinding.ensureInitialized();
+  await Get.putAsync(() => SharedPreferences.getInstance());
+  Get.put(ApiService());
+  Get.put(RegistrationController());
   runApp(MyApp());
 }
 
