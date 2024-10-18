@@ -79,7 +79,7 @@ class SignupState extends State<Signup> {
 
 
     if (passwordController.text != confirmPasswordController.text) {
-      Get.snackbar('Error', 'Passwords do not match');
+       Get.snackbar('Error', 'كلمات المرور غير متطابقة');
       return;
     }
 
@@ -88,13 +88,12 @@ class SignupState extends State<Signup> {
     if (emailController.text.isEmpty || 
         usernameController.text.isEmpty || 
         passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Please fill in all fields');
+      Get.snackbar('Error', 'الرجاء ملء جميع الحقول');
       return;
     }
 
     if (!GetUtils.isEmail(emailController.text)) {
-      Get.snackbar('Error', 'Please enter a valid email address');
-      return;
+      Get.snackbar('Error', 'الرجاء إدخال عنوان بريد إلكتروني صالح');
     }
 
     

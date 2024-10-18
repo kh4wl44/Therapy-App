@@ -10,15 +10,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api/registration_controller.dart';
 
 void main() async{
-   WidgetsFlutterBinding.ensureInitialized();
-   final sharedPreferences = await SharedPreferences.getInstance();
+    WidgetsFlutterBinding.ensureInitialized();
+  final sharedPreferences = await SharedPreferences.getInstance();
   Get.put(sharedPreferences);
 
   // Initialize RegistrationController
   final registrationController = Get.put(RegistrationController());
 
   // Initialize ApiService with RegistrationController
-  Get.put(ApiService(registrationController));
+  final apiService = Get.put(ApiService(registrationController));
+
+  // Set up the callback
+  registrationController.sendPreferencesCallback = apiService.sendClientPreferences;
+
   runApp(MyApp());
 }
 

@@ -65,15 +65,15 @@ class ClientTypes extends StatelessWidget {
                 title: 'جلسات إنفرادية',
                 onPressed: () {
                   final controller = Get.find<RegistrationController>();
-                    controller.updateSessionType('individual');
+                     controller.updateSessionType('جلسات فردية');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
-                title: 'جلسات مخصصة للأزواج',
+                title: 'جلسات للأزواج',
                 onPressed: () {
                   final controller = Get.find<RegistrationController>();
-                    controller.updateSessionType('couples');
+                     controller.updateSessionType('جلسات للأزواج');
                 },
               ),
               SizedBox(height: 20),
@@ -81,7 +81,7 @@ class ClientTypes extends StatelessWidget {
                 title: 'جلسات لطفلي',
                 onPressed: () {
                   final controller = Get.find<RegistrationController>();
-                  controller.updateSessionType('child');
+                    controller.updateSessionType('جلسات للأطفال');
                 },
               ),
               SizedBox(height: 20),
@@ -89,7 +89,7 @@ class ClientTypes extends StatelessWidget {
                 title: 'جلسات عائلية',
                 onPressed: () {
                     final controller = Get.find<RegistrationController>();
-                    controller.updateSessionType('family');
+                     controller.updateSessionType('جلسات عائلية');
                 },
               ),
               const SizedBox(height: 195),

@@ -4,8 +4,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/userType.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart'; // Import your main content page
+import 'package:lati_project/features/auth/screens/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:lati_project/api/registration_controller.dart';
 class LandingPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _LandingPageState();
@@ -34,9 +35,18 @@ class _LandingPageState extends State<LandingPage> {
     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 
     if (isLoggedIn) {
-      // User is already logged in, navigate to main content
-      Get.offAll(() => ClientTypes()); // Replace with your main content page
-    } else {
+       final registrationController = Get.find<RegistrationController>();
+    bool isRegistrationComplete = await registrationController.isRegistrationComplete();
+    
+    if (isRegistrationComplete)
+    {
+      Get.offAll(() => HomePage()); // Replace with your main content page
+    } else
+    {
+       Get.offAll(() => ClientTypes());
+    }}
+    
+    else {
       // User is not logged in, navigate to UserType page
       Get.to(() => UserType());
     }

@@ -51,9 +51,9 @@ class PrefferedLanguage extends StatelessWidget {
                   ),
                 ),
               ),
-              CustomButton('العربية', 'ar'),
+              CustomButton('العربية', 'العربية'),
               SizedBox(height: 20),
-              CustomButton('English', 'en'),
+              CustomButton('الإنجليزية', 'الإنجليزية'),
               SizedBox(height: 40),
               SizedBox(height: 260),
               Center(

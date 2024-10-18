@@ -54,13 +54,13 @@ class MaleOrFemale extends StatelessWidget {
               ),
 
               CustomButton( 'أنثى',
-                isSelected: controller.gender.value == 'female',
-                onPressed: () => controller.updateGender('female'),
+                isSelected: controller.gender.value == 'أنثى',
+                onPressed: () => controller.updateGender('أنثى'),
               ),
               SizedBox(height: 20),
               CustomButton( 'ذكر',
-                isSelected: controller.gender.value == 'male',
-                onPressed: () => controller.updateGender('male'),
+                isSelected: controller.gender.value == 'ذكر',
+                onPressed: () => controller.updateGender('ذكر'),
               ),
               SizedBox(height: 40),
 
@@ -75,18 +75,18 @@ class MaleOrFemale extends StatelessWidget {
               ),
               SizedBox(height: 20),
               CustomButton('لا تفضيل',
-                isSelected: controller.therapistPreference.value == 'any',
-                onPressed: () => controller.updateTherapistPreference('any'),
+                isSelected: controller.therapistPreference.value == 'لا تفضيل',
+                onPressed: () => controller.updateTherapistPreference('لا تفضيل'),
               ),
               SizedBox(height: 20),
               CustomButton(  'امرأة',
-                isSelected: controller.therapistPreference.value == 'female',
-                onPressed: () => controller.updateTherapistPreference('female'),
+                isSelected: controller.therapistPreference.value == 'امرأة',
+                onPressed: () => controller.updateTherapistPreference('امرأة'),
               ),
               SizedBox(height: 20),
               CustomButton( 'رجل',
-                isSelected: controller.therapistPreference.value == 'male',
-                onPressed: () => controller.updateTherapistPreference('male'),),
+                isSelected: controller.therapistPreference.value == 'رجل',
+                onPressed: () => controller.updateTherapistPreference('رجل'),),
               SizedBox(height: 50),
               Center(
                 child: ElevatedButton(
@@ -94,7 +94,7 @@ class MaleOrFemale extends StatelessWidget {
                   if (controller.gender.value.isNotEmpty && controller.therapistPreference.value.isNotEmpty) {
                       Get.to(() => ChooseTopicsToShare());
                     } else {
-                      Get.snackbar('Error', 'Please select your gender and therapist preference');
+                      Get.snackbar('Error', 'الرجاء اختيار جنسك وتفضيلك للمعالج');
                     }
                   },
                   style: ElevatedButton.styleFrom(
