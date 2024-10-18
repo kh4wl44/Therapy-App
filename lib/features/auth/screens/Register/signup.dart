@@ -1,16 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:lati_project/api/api_service.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 import 'login.dart';
 
-class Signup extends StatelessWidget {
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+class Signup extends StatefulWidget {
+
+  final bool? isTherapist;
+
+   Signup({Key? key, required this.isTherapist}) : super(key: key);
+       
+  @override
+  _SignupState createState() => _SignupState();
+}
+
+Future<void> saveUserInfo(String name, String email, bool isTherapist ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', name);
+    await prefs.setString('user_email', email);
+    await prefs.setBool('is_logged_in', true);
+    await prefs.setBool('is_therapist', isTherapist);
+  }
+
+class _SignupState extends State<Signup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  final ApiService _apiService = ApiService();
+      
 
-   Signup({super.key});
+ 
+
+
+      void _handleSignup() async {
+
+
+
+    if (passwordController.text != confirmPasswordController.text) {
+      Get.snackbar('Error', 'Passwords do not match');
+      return;
+    }
+
+    
+
+    if (emailController.text.isEmpty || 
+        usernameController.text.isEmpty || 
+        passwordController.text.isEmpty) {
+      Get.snackbar('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!GetUtils.isEmail(emailController.text)) {
+      Get.snackbar('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    
+
+      final userRequest = UserSignUpRequest(
+      name: usernameController.text, // Assuming username is used as name
+      username: usernameController.text,
+      email: emailController.text,
+      password: passwordController.text,
+      isTherapist: false, // Set this based on user selection if applicable
+    );
+
+    final result = await _apiService.signupUser(userRequest);
+
+    if (result['success']) {
+      await saveUserInfo(usernameController.text, emailController.text, widget.isTherapist ?? false);
+      Get.snackbar('Success', result['message']);
+      Get.to(() => ClientTypes());
+    } else {
+      Get.snackbar('Error', result['message']);
+      if (result['statusCode'] == 400) {
+        print('There was a problem with the data sent to the server. Please check your inputs.');
+      }
+    }
+  }
 
   // Reusable TextField widget
   Widget buildTextField(String hintText, IconData prefixIcon, {bool obscureText = false, TextEditingController? controller}) {
@@ -90,9 +162,7 @@ class Signup extends StatelessWidget {
                   const SizedBox(height: 40),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        Get.to(() => ClientTypes());
-                      },
+                      onPressed:  _handleSignup,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff561789),
                         minimumSize: Size(double.minPositive, 50),
@@ -138,4 +208,8 @@ class Signup extends StatelessWidget {
       ),
     );
   }
+
+
+
 }
+

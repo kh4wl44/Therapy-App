@@ -1,13 +1,96 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../api/api_service.dart';
 import 'MaleOrFemale.dart';
 
+
+class RegistrationController extends GetxController {
+  late ApiService apiService;
+  final RxBool isLoading = false.obs;
+
+   final RxString sessionType = ''.obs;
+  final RxString gender = ''.obs;
+  final RxString therapistPreference = ''.obs;
+  final RxString languagePreference = ''.obs;
+  final RxList<String> topics = <String>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    apiService = Get.find<ApiService>();
+  }
+
+
+  // ... existing code ...
+
+  void updateTherapistPreference(String preference) {
+    therapistPreference.value = preference;
+  }
+
+  
+
+  void updateSessionType(String type) {
+    sessionType.value = type;
+  }
+
+  void updateGender(String selectedGender) {
+    gender.value = selectedGender;
+  }
+
+  
+
+  void updateLanguagePreference(String language) {
+    languagePreference.value = language;
+  }
+
+  // Add other update methods as needed
+
+  Future<void> sendClientPreferences() async {
+    if (sessionType.isEmpty || gender.isEmpty) {
+      Get.snackbar('Error', 'Please complete all required fields');
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+       final userPreferences = UserPreferences(
+        sessionType: sessionType.value,
+        gender: gender.value,
+        therapistPreference: therapistPreference.value,
+          languagePreference: languagePreference.value,
+         topics:topics,
+        // ... other fields ...
+      );
+      
+      final token = 'your_auth_token_here'; // You should retrieve this securely
+      
+      final result = await apiService.sendClientPreferences(userPreferences, token);
+       if (result['success']) {
+        Get.snackbar('Success', 'Preferences updated successfully');
+        // Navigate to the next screen or home screen
+        // Get.offAll(() => HomeScreen());
+      } else {
+        Get.snackbar('Error', result['message']);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update preferences');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}
+
 class ClientTypes extends StatelessWidget {
+ const ClientTypes({super.key});
+
+  
+
   @override
   Widget build(BuildContext context) {
+    Get.put(RegistrationController());
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -53,35 +136,40 @@ class ClientTypes extends StatelessWidget {
               CustomButton(
                 title: 'جلسات إنفرادية',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                    controller.updateSessionType('individual');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات مخصصة للأزواج',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                    controller.updateSessionType('couples');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات لطفلي',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                  controller.updateSessionType('child');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات عائلية',
                 onPressed: () {
-                  // Handle button press
+                    final controller = Get.find<RegistrationController>();
+                    controller.updateSessionType('family');
                 },
               ),
               const SizedBox(height: 195),
               ElevatedButton(
                 onPressed: () {
                   Get.to(() => MaleOrFemale());
-                },
+              },
+                
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff561789),
                   minimumSize: Size(double.minPositive, 50),

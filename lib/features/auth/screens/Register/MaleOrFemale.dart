@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/chooseTopicsToShare.dart';
+import 'ClientTypes.dart';
 
 class MaleOrFemale extends StatelessWidget {
+
+   final RegistrationController controller = Get.find<RegistrationController>();
+
+    MaleOrFemale({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,9 +51,16 @@ class MaleOrFemale extends StatelessWidget {
                   ),
                 ),
               ),
-              CustomButton('أنثى'),
+
+              CustomButton( 'أنثى',
+                isSelected: controller.gender.value == 'female',
+                onPressed: () => controller.updateGender('female'),
+              ),
               SizedBox(height: 20),
-              CustomButton('ذكر'),
+              CustomButton( 'ذكر',
+                isSelected: controller.gender.value == 'male',
+                onPressed: () => controller.updateGender('male'),
+              ),
               SizedBox(height: 40),
 
               Padding(
@@ -61,16 +73,28 @@ class MaleOrFemale extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              CustomButton('لا تفضيل'),
+              CustomButton('لا تفضيل',
+                isSelected: controller.therapistPreference.value == 'any',
+                onPressed: () => controller.updateTherapistPreference('any'),
+              ),
               SizedBox(height: 20),
-              CustomButton('امرأة'),
+              CustomButton(  'امرأة',
+                isSelected: controller.therapistPreference.value == 'female',
+                onPressed: () => controller.updateTherapistPreference('female'),
+              ),
               SizedBox(height: 20),
-              CustomButton('ذكر'),
+              CustomButton( 'رجل',
+                isSelected: controller.therapistPreference.value == 'male',
+                onPressed: () => controller.updateTherapistPreference('male'),),
               SizedBox(height: 50),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.to(() => ChooseTopicsToShare());
+                  if (controller.gender.value.isNotEmpty && controller.therapistPreference.value.isNotEmpty) {
+                      Get.to(() => ChooseTopicsToShare());
+                    } else {
+                      Get.snackbar('Error', 'Please select your gender and therapist preference');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xff561789),
@@ -97,38 +121,33 @@ class MaleOrFemale extends StatelessWidget {
   }
 }
 
-class CustomButton extends StatefulWidget {
+class CustomButton extends StatelessWidget {
   final String title;
+  final bool isSelected;
+  final VoidCallback onPressed;
 
-  CustomButton(this.title);
+  CustomButton(this.title, {required this.isSelected, required this.onPressed});
 
-  @override
-  _CustomButtonState createState() => _CustomButtonState();
-}
 
-class _CustomButtonState extends State<CustomButton> {
-  bool isPressed = false;
+
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          isPressed = !isPressed; // Toggle the pressed state
-        });
-      },
+      onPressed: onPressed,
+      
       style: ElevatedButton.styleFrom(
         minimumSize: Size(350, 50),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        backgroundColor: isPressed ? Colors.purple : Colors.white,
-        foregroundColor: isPressed ? Colors.white : Colors.deepPurple,
+        backgroundColor: isSelected ? Colors.purple : Colors.white,
+        foregroundColor: isSelected ? Colors.white : Colors.deepPurple,
       ),
       child: Align(
         alignment: Alignment.centerRight,
         child: Text(
-          widget.title,
+          title,
           style: GoogleFonts.almarai(
             fontSize: 20,
             fontWeight: FontWeight.bold,

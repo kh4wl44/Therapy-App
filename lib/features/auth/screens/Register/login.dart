@@ -171,7 +171,7 @@ class Login extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Get.to(() => Signup());
+                      Get.to(() => Signup(isTherapist: null,));
                     },
                     child: Center(
                       child: Text(

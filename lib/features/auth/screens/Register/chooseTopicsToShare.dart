@@ -4,8 +4,14 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/prefferedLanguage.dart';
+import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 
 class ChooseTopicsToShare extends StatelessWidget {
+  
+   final RegistrationController controller = Get.find<RegistrationController>();
+
+    ChooseTopicsToShare({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,14 +63,14 @@ class ChooseTopicsToShare extends StatelessWidget {
                     childAspectRatio: 2,
                   ),
                   children: [
-                    CustomButton('اضطرابات القلق'),
-                    CustomButton('مشاكل الغضب'),
-                    CustomButton('اضطراب ما بعد الصدمة'),
-                    CustomButton('الإكتئاب'),
-                    CustomButton('التنمر'),
-                    CustomButton('التوحد'),
-                    CustomButton('ضغط العمل'),
-                    CustomButton('فقد شخص عزيز'),
+                    CustomButton('اضطرابات القلق', 'anxiety'),
+                    CustomButton('مشاكل الغضب', 'anger'),
+                    CustomButton('اضطراب ما بعد الصدمة', 'post-traumatic stress disorder'),
+                    CustomButton('الإكتئاب', 'depression'),
+                    CustomButton('التنمر', 'bullying'),
+                    CustomButton('التوحد', 'autism'),
+                    CustomButton('ضغط العمل', 'work stress'),
+                    CustomButton('فقد شخص عزيز', 'loss of loved one'),
                   ],
                 ),
               ),
@@ -101,8 +107,9 @@ class ChooseTopicsToShare extends StatelessWidget {
 
 class CustomButton extends StatefulWidget {
   final String title;
+  final String topic;
 
-  CustomButton(this.title);
+  CustomButton(this.title,this.topic);
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
@@ -113,13 +120,16 @@ class _CustomButtonState extends State<CustomButton> {
 
   @override
   Widget build(BuildContext context) {
+    final RegistrationController controller = Get.find<RegistrationController>();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
         onPressed: () {
-          setState(() {
-            isPressed = !isPressed; // Toggle the pressed state
-          });
+          if (controller.topics.contains(widget.topic)) {
+            controller.topics.remove(widget.topic);
+          } else {
+            controller.topics.add(widget.topic);
+          }
         },
         style: ElevatedButton.styleFrom(
           minimumSize: Size(150, 50),

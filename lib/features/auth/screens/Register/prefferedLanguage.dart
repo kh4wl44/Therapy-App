@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 import '../home_page.dart';
 
 
 
 class PrefferedLanguage extends StatelessWidget {
+
+  final RegistrationController controller = Get.find<RegistrationController>();
+
+  PrefferedLanguage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,9 +53,9 @@ class PrefferedLanguage extends StatelessWidget {
                   ),
                 ),
               ),
-              CustomButton('العربية'),
+              CustomButton('العربية', 'ar'),
               SizedBox(height: 20),
-              CustomButton('English'),
+              CustomButton('English', 'en'),
               SizedBox(height: 40),
 
               SizedBox(height: 260),
@@ -87,8 +91,8 @@ class PrefferedLanguage extends StatelessWidget {
 
 class CustomButton extends StatefulWidget {
   final String title;
-
-  CustomButton(this.title);
+  final String language;
+  CustomButton(this.title,this.language);
 
   @override
   _CustomButtonState createState() => _CustomButtonState();

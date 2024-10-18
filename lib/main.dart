@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+
+import 'package:lati_project/api/api_service.dart';
 import 'package:lati_project/features/auth/screens/Register/landingpage.dart';
 
+import 'package:get/get.dart';
 
-import 'features/auth/screens/Register/login.dart';
 
-void main() {
+void main() async{
+   Get.put(ApiService());
   runApp(MyApp());
 }
 
