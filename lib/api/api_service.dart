@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:lati_project/features/auth/screens/Register/chooseTopicsToShare.dart';
 import 'package:logger/logger.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 // Define your data classes
 class UserSignUpRequest {
   final String name;
@@ -291,7 +292,104 @@ class ApiService {
     }
   }
 
+
+  Future<String?> startConversation(String therapistId) async {
+    const String url = '$baseUrl/start-conversation';
+
+    try {
+      String token = await _registrationController.getAuthToken();
+      if (token.isEmpty) {
+        throw Exception('No authentication token found');
+      }
+
+      final request = StartConversationRequest(therapistId: therapistId);
+
+      _logger.i('Sending start conversation request to: $url');
+      _logger.i('Request data: ${request.toJson()}');
+
+      final response = await _dio.post(
+        url,
+        data: request.toJson(),
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+      _logger.i('Response data: ${response.data}');
+
+      if (response.statusCode == 201) {
+        return response.data['conversationId'] as String?;
+      } else {
+        throw Exception('Failed to start conversation: ${response.data}');
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in startConversation: ${e.toString()}');
+      if (e.response != null) {
+        throw Exception('Server error: ${e.response?.data}');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (error) {
+      _logger.e('Unexpected error in startConversation: $error');
+      throw Exception('Unexpected error: $error');
+    }
+  }
+
+   Future<List<Conversation>> getConversations() async {
+    try {
+      String token = await _registrationController.getAuthToken();
+      if (token.isEmpty) {
+        _logger.e('No authentication token found');
+        throw Exception('No authentication token found');
+      }
+
+      // Decode the JWT token to get the user ID
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      String userId = decodedToken['userId']; // Adjust this key based on your JWT structure
+
+      if (userId.isEmpty) {
+        _logger.e('User ID not found in token');
+        throw Exception('User ID not found in token');
+      }
+
+      final String url = '$baseUrl/conversations/$userId';
+
+      _logger.i('Sending GET request to: $url');
+      _logger.i('Authorization token: Present');
+
+      final response = await _dio.get(
+        url,
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+      _logger.i('Response data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        List<dynamic> conversationsJson = response.data;
+        _logger.i('Number of conversations received: ${conversationsJson.length}');
+        return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+      } else {
+        _logger.e('Failed to fetch conversations. Status: ${response.statusCode}, Data: ${response.data}');
+        throw Exception('Failed to fetch conversations: ${response.data}');
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in getConversations: ${e.toString()}');
+      _logger.e('DioException response: ${e.response}');
+      throw Exception('Network error: ${e.message}');
+    } catch (e) {
+      _logger.e('Unexpected error in getConversations: $e');
+      throw Exception('Error fetching conversations: $e');
+    }
+  }
 }
+
+
 
 class UserPreferences {
   final String userId;
@@ -441,3 +539,94 @@ class SearchFilters {
     if (gender != null) 'gender': gender,
   };
 }
+
+class StartConversationRequest {
+  final String therapistId;
+
+  StartConversationRequest({required this.therapistId});
+
+  Map<String, dynamic> toJson() => {
+    'therapistId': therapistId,
+  };
+}
+
+// Add these classes after your existing classes
+
+class ChatMessage {
+  final String messageId;
+  final String conversationId;
+  final String senderId;
+  final String receiverId;
+  final String content;
+  final int timestamp;
+  final bool isFromTherapist;
+  final bool isRead;
+
+  ChatMessage({
+    required this.messageId,
+    required this.conversationId,
+    required this.senderId,
+    required this.receiverId,
+    required this.content,
+    required this.timestamp,
+    required this.isFromTherapist,
+    this.isRead = false,
+  });
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
+    messageId: json['messageId'],
+    conversationId: json['conversationId'],
+    senderId: json['senderId'],
+    receiverId: json['receiverId'],
+    content: json['content'],
+    timestamp: json['timestamp'],
+    isFromTherapist: json['isFromTherapist'],
+    isRead: json['isRead'] ?? false,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'messageId': messageId,
+    'conversationId': conversationId,
+    'senderId': senderId,
+    'receiverId': receiverId,
+    'content': content,
+    'timestamp': timestamp,
+    'isFromTherapist': isFromTherapist,
+    'isRead': isRead,
+  };
+}
+
+class Conversation {
+  final String conversationId;
+  final String userId;
+  final String therapistId;
+  final List<ChatMessage> messages;
+  final bool isActive;
+
+  Conversation({
+    required this.conversationId,
+    required this.userId,
+    required this.therapistId,
+    this.messages = const [],
+    this.isActive = true,
+  });
+
+  factory Conversation.fromJson(Map<String, dynamic> json) => Conversation(
+    conversationId: json['conversationId'],
+    userId: json['userId'],
+    therapistId: json['therapistId'],
+    messages: (json['messages'] as List?)
+        ?.map((m) => ChatMessage.fromJson(m))
+        .toList() ?? [],
+    isActive: json['isActive'] ?? true,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'conversationId': conversationId,
+    'userId': userId,
+    'therapistId': therapistId,
+    'messages': messages.map((m) => m.toJson()).toList(),
+    'isActive': isActive,
+  };
+}
+
