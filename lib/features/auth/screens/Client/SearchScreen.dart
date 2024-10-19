@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:lati_project/api/api_service.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -10,6 +13,8 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _controller = TextEditingController();
+
+  final ApiService _apiService = Get.find<ApiService>();
   List<dynamic> _searchResults = [];
   bool _isLoading = false;
 
@@ -21,20 +26,27 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchResults = []; // Clear previous results
     });
 
-    final query = _controller.text;
-    final response = await http.get(Uri.parse('http://your-api-url/search?q=$query')); // Replace with your actual Ktor endpoint
+    try {
+      final filters = SearchFilters(
+        name: _controller.text,
+        // Add other filters as needed
+      );
 
-    if (response.statusCode == 200) {
+      final results = await _apiService.searchTherapists(filters);
+
       setState(() {
-        _searchResults = json.decode(response.body); // Assuming the response body is a JSON array
+        _searchResults = results;
         _isLoading = false;
       });
-    } else {
-      // Handle error
+    } catch (e) {
+      print('Error searching therapists: $e');
       setState(() {
         _isLoading = false;
       });
-      // Optionally show an error message
+      // Show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error searching therapists')),
+      );
     }
   }
 
@@ -88,13 +100,13 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: ListView.builder(
                   itemCount: _searchResults.length,
                   itemBuilder: (context, index) {
-                    final item = _searchResults[index];
-                    return Card(
+                     final therapist = _searchResults[index];
+                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8.0),
                       child: ListTile(
-                        title: Text(item['title'], style: GoogleFonts.almarai(fontSize: 18)), // Adjust based on your data structure
+                        title: Text(therapist.userId, style: GoogleFonts.almarai(fontSize: 18)),
                         subtitle: Text(
-                          item['description'], // Adjust based on your data structure
+                          therapist.specialty,
                           style: GoogleFonts.almarai(textStyle: TextStyle(color: Colors.grey, fontSize: 14)),
                         ),
                         onTap: () {

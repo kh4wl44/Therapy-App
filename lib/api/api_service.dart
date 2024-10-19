@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:lati_project/api/registration_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:lati_project/features/auth/screens/Register/chooseTopicsToShare.dart';
 import 'package:logger/logger.dart';
-
+import 'package:http_parser/http_parser.dart';
 // Define your data classes
 class UserSignUpRequest {
   final String name;
@@ -38,7 +40,7 @@ class ApiService {
   final Dio _dio = Dio();
   final Logger _logger = Logger();
    final RegistrationController _registrationController;
-
+   
    ApiService(this._registrationController);
 
   Future<Map<String, dynamic>> signupUser(UserSignUpRequest userRequest) async {
@@ -166,6 +168,129 @@ class ApiService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> sendTherapistDetails(TherapistDetails details, File certificateFile) async {
+    const String url = '$baseUrl/therapistDetails';
+
+    try {
+       String token = await _registrationController.getAuthToken(); // Implement this method to retrieve the stored token
+      if (token.isEmpty) {
+        return {
+          'success': false,
+          'message': 'No authentication token found',
+        };
+      }
+
+      // Create form data
+      FormData formData = FormData.fromMap({
+        "therapistDetails": details.toJson().toString(), // Convert to string as the server expects
+        "certificate": await MultipartFile.fromFile(
+          certificateFile.path,
+          filename: 'certificate.jpg', // Adjust filename as needed
+          contentType: MediaType('image', 'jpeg'), // Adjust content type as needed
+        ),
+      });
+
+      _logger.i('Sending therapist details to: $url');
+      _logger.i('Therapist details: ${details.toJson()}');
+      _logger.i('Certificate file: ${certificateFile.path}');
+
+      final response = await _dio.post(
+        url,
+        data: formData,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+      _logger.i('Response data: ${response.data}');
+
+      if (response.statusCode == 201) {
+        return {
+          'success': true,
+          'message': 'Therapist details saved successfully',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Failed to save therapist details: ${response.data}',
+          'statusCode': response.statusCode,
+        };
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException: ${e.toString()}');
+      _logger.e('DioException response: ${e.response}');
+      if (e.response != null) {
+        return {
+          'success': false,
+          'message': 'Server error: ${e.response?.data}',
+          'statusCode': e.response?.statusCode,
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Network error: ${e.message}',
+        };
+      }
+    } catch (error) {
+      _logger.e('Unexpected error: $error');
+      return {
+        'success': false,
+        'message': 'Unexpected error: $error',
+      };
+    }
+  }
+
+
+  Future<List<TherapistDetails>> searchTherapists(SearchFilters filters) async {
+    const String url = '$baseUrl/search/therapists';
+
+    try {
+      String token = await _registrationController.getAuthToken();
+      if (token.isEmpty) {
+        throw Exception('No authentication token found');
+      }
+
+      _logger.i('Sending search request to: $url');
+      _logger.i('Search filters: ${filters.toJson()}');
+
+      final response = await _dio.post(
+        url,
+        data: filters.toJson(),
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+      _logger.i('Response data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        List<dynamic> therapistsJson = response.data;
+        return therapistsJson.map((json) => TherapistDetails.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
+        return []; // Return an empty list if no therapists are found
+      } else {
+        throw Exception('Failed to search therapists: ${response.data}');
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in searchTherapists: ${e.toString()}');
+      if (e.response != null) {
+        throw Exception('Server error: ${e.response?.data}');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (error) {
+      _logger.e('Unexpected error in searchTherapists: $error');
+      throw Exception('Unexpected error: $error');
+    }
+  }
+
 }
 
 class UserPreferences {
@@ -288,4 +413,31 @@ class TherapistDetails {
     availability: (json['availability'] as List).map((a) => Availability.fromJson(a)).toList(),
     gender: json['gender'],
   );
+}
+
+
+
+
+class SearchFilters {
+  final String? name;
+  final List<String>? specialties;
+  final double? cost;
+  final String? availability;
+  final String? gender;
+
+  SearchFilters({
+    this.name,
+    this.specialties,
+    this.cost,
+    this.availability,
+    this.gender,
+  });
+
+  Map<String, dynamic> toJson() => {
+    if (name != null) 'name': name,
+    if (specialties != null) 'specialties': specialties,
+    if (cost != null) 'cost': cost,
+    if (availability != null) 'availability': availability,
+    if (gender != null) 'gender': gender,
+  };
 }

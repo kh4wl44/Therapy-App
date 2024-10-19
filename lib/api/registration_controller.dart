@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:lati_project/api/api_service.dart';
-
+import 'dart:convert';
 class RegistrationController extends GetxController {
   
 
@@ -158,6 +158,42 @@ class RegistrationController extends GetxController {
   Future<void> setRegistrationComplete() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('registration_complete', true);
+  }
+
+
+  //--------------------------therapistdetails-------------------
+
+   final Rx<TherapistDetails?> therapistDetails = Rx<TherapistDetails?>(null);
+
+ Future<void> saveTherapistDetails(TherapistDetails details) async {
+  final prefs = await SharedPreferences.getInstance();
+  final detailsJson = json.encode(details.toJson());
+  await prefs.setString('therapist_details', detailsJson);
+  therapistDetails.value = details;
+  _logger.i('Saved therapist details: $detailsJson');
+}
+
+  Future<void> loadTherapistDetails() async {
+  final prefs = await SharedPreferences.getInstance();
+  final detailsString = prefs.getString('therapist_details');
+  if (detailsString != null) {
+    try {
+      final detailsMap = json.decode(detailsString) as Map<String, dynamic>;
+      therapistDetails.value = TherapistDetails.fromJson(detailsMap);
+      _logger.i('Loaded therapist details: ${therapistDetails.value?.toJson()}');
+    } catch (e) {
+      _logger.e('Error parsing therapist details: $e');
+    }
+  } else {
+    _logger.i('No saved therapist details found');
+  }
+}
+
+  Future<void> clearTherapistDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('therapist_details');
+    therapistDetails.value = null;
+    _logger.i('Cleared therapist details');
   }
 }
 
