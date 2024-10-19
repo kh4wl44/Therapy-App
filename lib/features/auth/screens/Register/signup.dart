@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:lati_project/api/api_service.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
+import '../Therapist/TherapistHome.dart';
+import '../home_page.dart';
 import 'login.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -88,7 +90,9 @@ class SignupState extends State<Signup> {
     if (emailController.text.isEmpty || 
         usernameController.text.isEmpty || 
         passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'الرجاء ملء جميع الحقول');
+      Get.snackbar('Error', 'الرجاء ملء جميع الحقول',
+          colorText: Colors.white,
+          backgroundColor: Colors.redAccent);
       return;
     }
 
@@ -232,7 +236,7 @@ class SignupState extends State<Signup> {
                   Center(
                     child: TextButton(
                       onPressed: () {
-                        Get.off(Login());
+                        Get.off(HomePage());
                       },
                       child: Text(
                         'قم بتسجيل الدخول',

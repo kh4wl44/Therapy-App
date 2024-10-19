@@ -111,6 +111,10 @@ class _TherapistHomeState extends State<TherapistHome> {
             borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(50),
                 bottom: Radius.circular(50)), // Radius for the top corners
+            border: Border.all(
+              color: Colors.purple,
+                width: 1
+            )
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10), // Add vertical padding
