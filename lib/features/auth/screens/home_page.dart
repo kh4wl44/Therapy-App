@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'Client/ChatsScreen.dart';
 import 'Client/ClientProfile.dart';
 import 'Client/ClientSessions.dart';
@@ -76,6 +75,11 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Color(0xffF4D7F4),
         automaticallyImplyLeading: false,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(30),
+            )
+        ),
         title: Container(
           width: double.infinity,
           child: Row(
@@ -179,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color(0xffF6F3B2),
+                      color: Color(0x80F3E5F8),
                       borderRadius: BorderRadius.all(Radius.circular(30)),
                     ),
                     child: Column(
@@ -223,6 +227,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+
+
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Container(
