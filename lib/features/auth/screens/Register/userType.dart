@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lati_project/features/auth/screens/Register/signup.dart';
 
+import '../Therapist/TherapistHome.dart';
 import 'login.dart';
 
 class UserType extends StatelessWidget {
@@ -53,7 +54,8 @@ class UserType extends StatelessWidget {
                   SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: () {
-                      Get.to(()=>Signup());
+                      Get.to(()=>TherapistHome());
+                      //Get.to(()=>Signup());
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(200, 50),

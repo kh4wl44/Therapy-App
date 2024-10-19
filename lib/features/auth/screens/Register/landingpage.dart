@@ -52,7 +52,7 @@ class _LandingPageState extends State<LandingPage> {
                 child: Text(
                   "بلا حواجز",
                   style: GoogleFonts.almarai(
-                    textStyle: TextStyle(fontSize: 35, color: Colors.white),
+                    textStyle: TextStyle(fontSize: 50, color: Colors.white),
                   ),
                 ),
               ),
