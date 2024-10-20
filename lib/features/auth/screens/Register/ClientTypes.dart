@@ -1,24 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../api/api_service.dart';
-import '../../../../api/registration_controller.dart';
+
 import 'MaleOrFemale.dart';
 
-import 'package:logger/logger.dart';
-
-
-
 class ClientTypes extends StatelessWidget {
- const ClientTypes({super.key});
-
-  
-
   @override
   Widget build(BuildContext context) {
-    Get.put(RegistrationController());
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -64,40 +53,35 @@ class ClientTypes extends StatelessWidget {
               CustomButton(
                 title: 'جلسات إنفرادية',
                 onPressed: () {
-                  final controller = Get.find<RegistrationController>();
-                     controller.updateSessionType('جلسات فردية');
+                  // Handle button press
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
-                title: 'جلسات للأزواج',
+                title: 'جلسات مخصصة للأزواج',
                 onPressed: () {
-                  final controller = Get.find<RegistrationController>();
-                     controller.updateSessionType('جلسات للأزواج');
+                  // Handle button press
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات لطفلي',
                 onPressed: () {
-                  final controller = Get.find<RegistrationController>();
-                    controller.updateSessionType('جلسات للأطفال');
+                  // Handle button press
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات عائلية',
                 onPressed: () {
-                    final controller = Get.find<RegistrationController>();
-                     controller.updateSessionType('جلسات عائلية');
+                  // Handle button press
                 },
               ),
               const SizedBox(height: 195),
               ElevatedButton(
                 onPressed: () {
                   Get.to(() => MaleOrFemale());
-              },
-                
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff561789),
                   minimumSize: Size(double.minPositive, 50),
