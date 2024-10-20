@@ -1,37 +1,50 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:lati_project/features/auth/screens/Register/common.dart';
 import 'package:lati_project/features/auth/screens/Register/signup.dart';
 import 'package:get/get.dart';
+import 'package:lati_project/features/auth/screens/Therapist/TherapistHome.dart';
+import 'package:lati_project/features/auth/screens/home_page.dart';
 import 'forgetpassword.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Login extends StatelessWidget {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
 
   Future<void> loginUser() async {
     final response = await http.post(
-      Uri.parse('http://<YOUR_SERVER_IP>:8080/login'),
+      Uri.parse('http://10.0.2.2:8080/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'email': emailController.text,
+        'username': usernameController.text,
         'password': passwordController.text,
       }),
     );
 
     if (response.statusCode == 200) {
+      final String token = jsonDecode(response.body)['token'];
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+      await saveUserInfo(decodedToken['name'], decodedToken['email'],
+          decodedToken['isTherapist'] ?? false);
+      // await checkSavedInfo();
+
       Get.snackbar("Success", "Login successful");
+      Get.to(
+        () =>
+            decodedToken['isTherapist'] ?? false ? TherapistHome() : HomePage(),
+      );
       // Navigate to another screen or perform other actions
     } else {
       Get.snackbar("Error", "Invalid credentials");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +86,13 @@ class Login extends StatelessWidget {
                     child: Container(
                       width: 350,
                       child: TextField(
-                        controller: emailController,
+                        controller: usernameController,
                         style: GoogleFonts.almarai(fontSize: 20),
                         decoration: InputDecoration(
                           hintText: "البريد الإلكتروني",
                           hintStyle: TextStyle(color: Color(0xff595959)),
-                          prefixIcon: const Icon(Icons.person, color: Color(0xff595959)),
+                          prefixIcon: const Icon(Icons.person,
+                              color: Color(0xff595959)),
                           filled: true,
                           fillColor: Colors.white54,
                           enabledBorder: OutlineInputBorder(
@@ -108,7 +122,8 @@ class Login extends StatelessWidget {
                         decoration: InputDecoration(
                           hintText: "كلمة السر",
                           hintStyle: TextStyle(color: Color(0xff595959)),
-                          prefixIcon: const Icon(Icons.lock, color: Color(0xff595959)),
+                          prefixIcon:
+                              const Icon(Icons.lock, color: Color(0xff595959)),
                           filled: true,
                           fillColor: Colors.white54,
                           enabledBorder: OutlineInputBorder(
@@ -135,7 +150,8 @@ class Login extends StatelessWidget {
                       },
                       child: Text(
                         'نسيت كلمة السر؟',
-                        style: GoogleFonts.almarai(color: Colors.white, fontSize: 16),
+                        style: GoogleFonts.almarai(
+                            color: Colors.white, fontSize: 16),
                       ),
                     ),
                   ),
@@ -166,18 +182,22 @@ class Login extends StatelessWidget {
                   Center(
                     child: Text(
                       "ليس لديك حساب؟",
-                      style: GoogleFonts.almarai(color: Colors.white, fontSize: 18),
+                      style: GoogleFonts.almarai(
+                          color: Colors.white, fontSize: 18),
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                      Get.to(() => Signup(isTherapist: null,));
+                      Get.to(() => Signup(
+                            isTherapist: null,
+                          ));
                     },
                     child: Center(
                       child: Text(
                         'قم بإنشاء حساب جديد',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.almarai(color: Color(0xff103D78), fontSize: 18),
+                        style: GoogleFonts.almarai(
+                            color: Color(0xff103D78), fontSize: 18),
                       ),
                     ),
                   ),
@@ -189,5 +209,4 @@ class Login extends StatelessWidget {
       ),
     );
   }
-
 }

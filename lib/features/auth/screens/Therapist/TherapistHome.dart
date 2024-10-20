@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../Client/NotificationsScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TherapistHome extends StatefulWidget {
   @override
@@ -12,8 +13,9 @@ class TherapistHome extends StatefulWidget {
 }
 
 class _TherapistHomeState extends State<TherapistHome> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Key for the scaffold
-  final String username = "محمد";
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>(); // Key for the scaffold
+  String username = "";
   int _selectedIndex = 0;
   Color backgroundColor = Colors.white.withOpacity(0.92);
   bool hasNewNotifications = false;
@@ -22,8 +24,20 @@ class _TherapistHomeState extends State<TherapistHome> {
     setState(() {
       _selectedIndex = index; // Update the selected index
     });
-  
-  
+  }
+
+  getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      username = prefs.getString('user_name') ?? '';
+    });
+  }
+
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
   }
 
   @override
@@ -34,9 +48,9 @@ class _TherapistHomeState extends State<TherapistHome> {
         backgroundColor: Color(0xffF4D7F4),
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(30),)),
-
+            borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(30),
+        )),
         title: Container(
           width: double.infinity,
           child: Row(
@@ -59,8 +73,6 @@ class _TherapistHomeState extends State<TherapistHome> {
                   ),
                 ),
               ),
-
-
               Padding(
                 padding: const EdgeInsets.only(left: 120),
                 child: Text(
@@ -91,9 +103,11 @@ class _TherapistHomeState extends State<TherapistHome> {
           padding: EdgeInsets.only(top: 50),
           children: <Widget>[
             ListTile(
-              title: Text('الصفحة الشخصية',
-                style: GoogleFonts.almarai(
-                    fontSize: 20, color: Color(0xff5A3D5C)),),
+              title: Text(
+                'الصفحة الشخصية',
+                style:
+                    GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),
+              ),
               onTap: () {
                 // Handle navigation to ClientProfile
                 //Get.to(() => ClientProfile());
@@ -107,17 +121,14 @@ class _TherapistHomeState extends State<TherapistHome> {
         padding: const EdgeInsets.all(12.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Color(0xffF4D7F4), // Background color
-            borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(50),
-                bottom: Radius.circular(50)), // Radius for the top corners
-            border: Border.all(
-              color: Colors.purple,
-                width: 1
-            )
-          ),
+              color: Color(0xffF4D7F4), // Background color
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(50),
+                  bottom: Radius.circular(50)), // Radius for the top corners
+              border: Border.all(color: Colors.purple, width: 1)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10), // Add vertical padding
+            padding: const EdgeInsets.symmetric(
+                vertical: 10), // Add vertical padding
             child: Padding(
               padding: const EdgeInsets.all(6.0),
               child: Row(
