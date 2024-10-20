@@ -3,7 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
 import '../../../../api/api_service.dart';
-import 'SearchScreen.dart'; // Import GetX for navigation
+import 'ClientSearchScreen.dart';
+// Import GetX for navigation
 
 class ChatsScreen extends StatefulWidget {
   @override
@@ -131,9 +132,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
               // Navigate to chat detail screen
               // Get.to(() => ChatDetailScreen(conversation: conversation));
             },
+
+
           ),
         );
       },
+
+
     );
   }
+
 }

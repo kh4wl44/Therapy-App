@@ -297,15 +297,18 @@ class ApiService {
     const String url = '$baseUrl/start-conversation';
 
     try {
+      //fetching token
       String token = await _registrationController.getAuthToken();
       if (token.isEmpty) {
         throw Exception('No authentication token found');
       }
 
+      //creating request payload
       final request = StartConversationRequest(therapistId: therapistId);
 
       _logger.i('Sending start conversation request to: $url');
       _logger.i('Request data: ${request.toJson()}');
+
 
       final response = await _dio.post(
         url,
@@ -340,18 +343,11 @@ class ApiService {
    Future<List<Conversation>> getConversations() async {
     try {
       String token = await _registrationController.getAuthToken();
-      if (token.isEmpty) {
-        _logger.e('No authentication token found');
-        throw Exception('No authentication token found');
-      }
-
-      // Decode the JWT token to get the user ID
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      String userId = decodedToken['userId']; // Adjust this key based on your JWT structure
-
-      if (userId.isEmpty) {
-        _logger.e('User ID not found in token');
-        throw Exception('User ID not found in token');
+      String userId = await _registrationController.getAuthToken();
+      
+      if (token.isEmpty || userId.isEmpty) {
+        _logger.e('No authentication token or user ID found');
+        throw Exception('Authentication information missing');
       }
 
       final String url = '$baseUrl/conversations/$userId';
@@ -368,22 +364,20 @@ class ApiService {
       );
 
       _logger.i('Response status code: ${response.statusCode}');
-      _logger.i('Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         List<dynamic> conversationsJson = response.data;
         _logger.i('Number of conversations received: ${conversationsJson.length}');
         return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
+        _logger.i('No conversations found for user');
+        return []; // Return an empty list if no conversations are found
       } else {
         _logger.e('Failed to fetch conversations. Status: ${response.statusCode}, Data: ${response.data}');
         throw Exception('Failed to fetch conversations: ${response.data}');
       }
-    } on DioException catch (e) {
-      _logger.e('DioException in getConversations: ${e.toString()}');
-      _logger.e('DioException response: ${e.response}');
-      throw Exception('Network error: ${e.message}');
     } catch (e) {
-      _logger.e('Unexpected error in getConversations: $e');
+      _logger.e('Error in getConversations: $e');
       throw Exception('Error fetching conversations: $e');
     }
   }
@@ -629,4 +623,6 @@ class Conversation {
     'isActive': isActive,
   };
 }
+
+
 
