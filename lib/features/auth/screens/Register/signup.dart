@@ -75,7 +75,7 @@ class SignupState extends State<Signup> {
 
     if (result['success']) {
       _logger.i('signup success, attempting to save user info');
-      await saveUserInfo(usernameController.text, emailController.text,
+      await saveUserInfo(    usernameController.text, emailController.text,
           widget.isTherapist ?? false);
       await checkSavedInfo();
 

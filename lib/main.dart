@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:lati_project/api/api_service.dart';
+import 'package:lati_project/features/auth/screens/Client/ClientSearchScreen.dart';
 import 'package:lati_project/features/auth/screens/Register/landingpage.dart';
 import 'package:lati_project/features/auth/screens/Register/login.dart';
+import 'package:lati_project/features/auth/screens/Register/signup.dart';
 import 'package:lati_project/features/auth/screens/home_page.dart';
 import 'package:get/get.dart';
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
+import 'package:lati_project/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api/registration_controller.dart';
@@ -40,7 +43,8 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: Login(),
+      theme: GlobalTheme().getTheme(),
+      home: SearchScreen(),
     );
   }
 }

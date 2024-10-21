@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:lati_project/api/api_service.dart';
 import 'package:lati_project/features/auth/screens/Register/common.dart';
 import 'package:lati_project/features/auth/screens/Register/signup.dart';
 import 'package:get/get.dart';
@@ -11,38 +12,28 @@ import 'forgetpassword.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late final ApiService _apiService;
+
+
+    @override
+    void initState() {
+      super.initState();
+      _apiService = Get.find<ApiService>();
+    }
 
   Future<void> loginUser() async {
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': usernameController.text,
-        'password': passwordController.text,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final String token = jsonDecode(response.body)['token'];
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-
-      await saveUserInfo(decodedToken['name'], decodedToken['email'],
-          decodedToken['isTherapist'] ?? false);
-      // await checkSavedInfo();
-
-      Get.snackbar("Success", "Login successful");
-      Get.to(
-        () =>
-            decodedToken['isTherapist'] ?? false ? TherapistHome() : HomePage(),
-      );
-      // Navigate to another screen or perform other actions
-    } else {
-      Get.snackbar("Error", "Invalid credentials");
+    final res = await _apiService.login(UserSignInRequest(username: usernameController.text, password: passwordController.text));
+    if (res['success']) {
+      Get.to(() =>
+            res['isTherapist'] ?? false ? TherapistHome() : HomePage());
     }
   }
 

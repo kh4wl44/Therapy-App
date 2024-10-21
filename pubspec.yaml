@@ -45,6 +45,7 @@ dependencies:
   google_fonts: ^6.2.1
   dio: ^5.7.0
   jwt_decoder: ^2.0.1
+  multi_dropdown: ^3.0.1
 
 
 dev_dependencies:

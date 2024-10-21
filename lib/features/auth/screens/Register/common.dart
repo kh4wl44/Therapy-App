@@ -6,6 +6,8 @@ final Logger _logger = Logger();
 Future<void> saveUserInfo(String name, String email, bool isTherapist) async {
   try {
     final prefs = await SharedPreferences.getInstance();
+
+
     bool nameSaved = await prefs.setString('user_name', name);
     _logger.i('user_name saved: $nameSaved');
 
