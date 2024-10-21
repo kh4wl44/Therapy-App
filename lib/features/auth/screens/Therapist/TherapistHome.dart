@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lati_project/features/auth/screens/Therapist/TherapistsSessions.dart';
 
 import '../Client/NotificationsScreen.dart';
 
@@ -23,46 +22,7 @@ class _TherapistHomeState extends State<TherapistHome> {
     setState(() {
       _selectedIndex = index; // Update the selected index
     });
-
-    switch (index) {
-      case 0:
-        // Get.to(() => SearchScreen())?.then((_) {
-        //   setState(() {
-        //     _selectedIndex = 0; // Set back to the home index
-        //   });
-        // });
-        break;
-      case 1:
-        // Get.to(() => SearchScreen())?.then((_) {
-        //   setState(() {
-        //     _selectedIndex = 0; // Set back to the home index
-        //   });
-        // });
-        break;
-      case 2:
-        // Get.to(() => SearchScreen())?.then((_) {
-        //   setState(() {
-        //     _selectedIndex = 0; // Set back to the home index
-        //   });
-        // });
-        break;
-      case 3:
-        // Get.to(() => Therapists sessions())?.then((_) {
-        //   setState(() {
-        //     _selectedIndex = 0; // Set back to the home index
-        //   });
-        // });
-        break;
-      case 4:
-      // Navigate to Therapist Sessions screen
-        Get.to(() => Therapistssessions())?.then((_) {
-          setState(() {
-            _selectedIndex = 0; // Set back to the home index
-          });
-        });
-        break;
-
-    }
+  
   
   }
 
@@ -114,7 +74,7 @@ class _TherapistHomeState extends State<TherapistHome> {
               ),
               IconButton(
                 onPressed: () {
-                  //Get.to(NotificationsScreen());
+                  Get.to(NotificationsScreen());
                 },
                 icon: Icon(
                   Icons.notifications_rounded,
@@ -132,16 +92,6 @@ class _TherapistHomeState extends State<TherapistHome> {
           children: <Widget>[
             ListTile(
               title: Text('الصفحة الشخصية',
-                style: GoogleFonts.almarai(
-                    fontSize: 20, color: Color(0xff5A3D5C)),),
-              onTap: () {
-                // Handle navigation to ClientProfile
-                //Get.to(() => ClientProfile());
-                //Navigator.pop(context); // Close the drawer
-              },
-            ),
-            ListTile(
-              title: Text('العملاء',
                 style: GoogleFonts.almarai(
                     fontSize: 20, color: Color(0xff5A3D5C)),),
               onTap: () {
@@ -173,9 +123,9 @@ class _TherapistHomeState extends State<TherapistHome> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildNavItem(Icons.home, 'الرئيسية', 0),
                   _buildNavItem(Icons.people_rounded, 'العملاء', 1),
                   _buildNavItem(Icons.edit_note_outlined, 'الملاحظات', 2),
+                  _buildNavItem(Icons.home, 'الرئيسية', 0),
                   _buildNavItem(Icons.chat, 'الدردشة', 3),
                   _buildNavItem(Icons.calendar_month, 'المواعيد', 4),
                 ],
@@ -186,33 +136,32 @@ class _TherapistHomeState extends State<TherapistHome> {
       ),
     );
   }
-
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    bool isSelected = _selectedIndex == index;
-
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.purple : Colors.grey.shade600,
-            size: 35, // Adjust icon size
-          ),
-          Text(
-            label,
-            style: GoogleFonts.almarai(
-              textStyle: TextStyle(
-                color: isSelected ? Colors.purple : Colors.grey.shade600,
-                fontSize: 16, // Adjust font size
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
+Widget _buildNavItem(IconData icon, String label, int index) {
+  var _selectedIndex;
+  bool isSelected = _selectedIndex == index;
 
+  return GestureDetector(
+    //onTap: () => _onItemTapped(index),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: isSelected ? Colors.purple : Colors.grey.shade600,
+          size: 35, // Adjust icon size
+        ),
+        Text(
+          label,
+          style: GoogleFonts.almarai(
+            textStyle: TextStyle(
+              color: isSelected ? Colors.purple : Colors.grey.shade600,
+              fontSize: 16, // Adjust font size
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}

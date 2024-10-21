@@ -11,6 +11,7 @@ import 'Client/NotificationsScreen.dart';
 import 'Client/ClientSearchScreen.dart';
 import 'Client/WriteJournal.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,13 +21,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final Logger _logger = Logger();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Key for the scaffold
-  final String username = "محمد";
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>(); // Key for the scaffold
+  String username = '';
   Color backgroundColor = Colors.white.withOpacity(0.92);
   int _selectedIndex = 0; // Track the selected index
   bool hasNewNotifications = false;
+
+  getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      username = prefs.getString('user_name') ?? '';
+    });
+  }
+
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
 
   Future<void> logoutUser() async {
     // Add your backend logout logic here
@@ -43,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
     switch (index) {
       case 0:
-      // Get.to(() => HomePage()); // Replace with actual HomeScreen
+        // Get.to(() => HomePage()); // Replace with actual HomeScreen
         break;
       case 1:
         Get.to(() => SearchScreen())?.then((_) {
@@ -85,9 +100,8 @@ class _HomePageState extends State<HomePage> {
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(30),
-            )
-        ),
+          bottom: Radius.circular(30),
+        )),
         title: Container(
           width: double.infinity,
           child: Row(
@@ -140,7 +154,11 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.only(top: 50),
           children: <Widget>[
             ListTile(
-              title: Text('الصفحة الشخصية', style: GoogleFonts.almarai( fontSize: 20, color: Color(0xff5A3D5C)),),
+              title: Text(
+                'الصفحة الشخصية',
+                style:
+                    GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),
+              ),
               onTap: () {
                 // Handle navigation to ClientProfile
                 Get.to(() => ClientProfile());
@@ -148,43 +166,63 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              title: Text('كتابة يوميات جديدة', style: GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),),
+              title: Text(
+                'كتابة يوميات جديدة',
+                style:
+                    GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),
+              ),
               onTap: () {
                 Get.to(WriteJournal());
               },
             ),
             ListTile(
-              title: Text('عرض اليوميات', style: GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),),
+              title: Text(
+                'عرض اليوميات',
+                style:
+                    GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),
+              ),
               onTap: () {
-                Get.to(() => JournalScreen(journals: [],));
+                Get.to(() => JournalScreen(
+                      journals: [],
+                    ));
               },
             ),
             ListTile(
-              title: Text('الإعدادات', style: GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),),
+              title: Text(
+                'الإعدادات',
+                style:
+                    GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),
+              ),
               onTap: () {
                 //Get.to(() => JournalScreen(journals: [],));
               },
             ),
             ListTile(
-              title: Text('تسجيل خروج', style: GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C))),
+              title: Text('تسجيل خروج',
+                  style: GoogleFonts.almarai(
+                      fontSize: 20, color: Color(0xff5A3D5C))),
               onTap: () async {
                 // Show the confirmation dialog
                 bool? confirmed = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text('تأكيد تسجيل الخروج', style: GoogleFonts.almarai()),
-                      content: Text('هل أنت متأكد أنك تريد تسجيل الخروج؟', style: GoogleFonts.almarai(fontSize: 18)),
+                      title: Text('تأكيد تسجيل الخروج',
+                          style: GoogleFonts.almarai()),
+                      content: Text('هل أنت متأكد أنك تريد تسجيل الخروج؟',
+                          style: GoogleFonts.almarai(fontSize: 18)),
                       actions: [
                         TextButton(
-                          child: Text('إلغاء', style: GoogleFonts.almarai(fontSize: 15)),
+                          child: Text('إلغاء',
+                              style: GoogleFonts.almarai(fontSize: 15)),
                           onPressed: () {
                             // Close the dialog without logging out
                             Navigator.of(context).pop(false);
                           },
                         ),
                         TextButton(
-                          child: Text('نعم', style: GoogleFonts.almarai(fontSize: 15)),
+                          child: Text('نعم',
+                              style: GoogleFonts.almarai(fontSize: 15)),
                           onPressed: () {
                             // Close the dialog and log the user out
                             Navigator.of(context).pop(true);
@@ -271,22 +309,18 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Color(0xffF4D7F4), // Background color
-            borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(50),
-                bottom: Radius.circular(50)), // Radius for the top corners
-              border: Border.all(
-                  color: Colors.purple,
-                  width: 1
-              )
-          ),
+              color: Color(0xffF4D7F4), // Background color
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(50),
+                  bottom: Radius.circular(50)), // Radius for the top corners
+              border: Border.all(color: Colors.purple, width: 1)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10), // Add vertical padding
+            padding: const EdgeInsets.symmetric(
+                vertical: 10), // Add vertical padding
             child: Padding(
               padding: const EdgeInsets.all(6.0),
               child: Row(
@@ -340,11 +374,26 @@ class MoodRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        MoodIconButton(icon: Icons.insert_emoticon, label: 'سعيد', color: Color(0xFF4CBD57)),
-        MoodIconButton(icon: Icons.sentiment_satisfied, label: 'جيد', color: Color(0xFFFFB300)),
-        MoodIconButton(icon: Icons.sentiment_neutral, label: 'معتدل', color: Color(0xFFF36A92)),
-        MoodIconButton(icon: Icons.sentiment_dissatisfied, label: 'غاضب', color: Color(0xFFFF0000)),
-        MoodIconButton(icon: Icons.sentiment_very_dissatisfied, label: 'حزين', color: Color(0xFF4278A4)),
+        MoodIconButton(
+            icon: Icons.insert_emoticon,
+            label: 'سعيد',
+            color: Color(0xFF4CBD57)),
+        MoodIconButton(
+            icon: Icons.sentiment_satisfied,
+            label: 'جيد',
+            color: Color(0xFFFFB300)),
+        MoodIconButton(
+            icon: Icons.sentiment_neutral,
+            label: 'معتدل',
+            color: Color(0xFFF36A92)),
+        MoodIconButton(
+            icon: Icons.sentiment_dissatisfied,
+            label: 'غاضب',
+            color: Color(0xFFFF0000)),
+        MoodIconButton(
+            icon: Icons.sentiment_very_dissatisfied,
+            label: 'حزين',
+            color: Color(0xFF4278A4)),
       ],
     );
   }
@@ -372,7 +421,9 @@ class MoodIconButton extends StatelessWidget {
               _logger.i('$label button pressed');
             },
           ),
-          Text(label, style: GoogleFonts.almarai(textStyle: TextStyle(fontSize: 16, color: color))),
+          Text(label,
+              style: GoogleFonts.almarai(
+                  textStyle: TextStyle(fontSize: 16, color: color))),
         ],
       ),
     );
@@ -470,7 +521,9 @@ class SessionCard extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {},
-                        child: Text('التفاصيل', style: GoogleFonts.almarai(textStyle: TextStyle(fontSize: 12))),
+                        child: Text('التفاصيل',
+                            style: GoogleFonts.almarai(
+                                textStyle: TextStyle(fontSize: 12))),
                       ),
                     ),
                   ),
@@ -484,14 +537,18 @@ class SessionCard extends StatelessWidget {
                 SizedBox(width: 5),
                 Text(
                   '2024/10/6',
-                  style: GoogleFonts.almarai(textStyle: TextStyle(color: Colors.black54, fontSize: 14)),
+                  style: GoogleFonts.almarai(
+                      textStyle:
+                          TextStyle(color: Colors.black54, fontSize: 14)),
                 ),
                 SizedBox(width: 20),
                 Icon(Icons.access_time, color: Colors.grey),
                 SizedBox(width: 5),
                 Text(
                   '6:30 مساءً',
-                  style: GoogleFonts.almarai(textStyle: TextStyle(color: Colors.black54, fontSize: 14)),
+                  style: GoogleFonts.almarai(
+                      textStyle:
+                          TextStyle(color: Colors.black54, fontSize: 14)),
                 ),
               ],
             ),
