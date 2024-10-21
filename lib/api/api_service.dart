@@ -7,6 +7,7 @@ import 'package:lati_project/api/registration_controller.dart';
 import 'package:lati_project/features/auth/screens/Register/common.dart';
 import 'package:lati_project/features/auth/screens/Therapist/TherapistHome.dart';
 import 'package:lati_project/features/auth/screens/home_page.dart';
+import 'package:lati_project/models/conversation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:lati_project/features/auth/screens/Register/chooseTopicsToShare.dart';
@@ -153,45 +154,7 @@ class ApiService {
           'message': 'Invalid credentials',
         };
       }
-    }
-
-  Future<Map<String, dynamic>> login(UserSignInRequest userSignInRequest) async {
-      final url = '$baseUrl/login';
-
-      final response = await _dio.post(
-        url,
-        options: Options(
-          validateStatus: (status) => status! < 500,
-        ),
-        data: userSignInRequest.toJson(),
-      );
-
-      if (response.statusCode == 200) {
-        final String token = response.data['token'];
-        await _registrationController.saveAuthToken(token);
-        _logger.i('Token saved after login: ${token.isNotEmpty ? "Token present" : "No token"}');
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-
-        await saveUserInfo(decodedToken['name'], decodedToken['email'],
-            decodedToken['isTherapist'] ?? false);
-        // await checkSavedInfo();
-
-        Get.snackbar("Success", "Login successful");
-        return {'success': true, 'message': 'Signup successful!', 'isTherapist': decodedToken['isTherapist']};
-        // Get.to(() =>
-        //     decodedToken['isTherapist'] ?? false ? TherapistHome() : HomePage);
-        // Navigate to another screen or perform other actions
-      } else {
-        Get.snackbar("Error", "Invalid credentials");
-        return {
-          'success': false,
-          'message': 'Invalid credentials',
-        };
-      }
-    }
-
-  
-  
+    }  
 
   Future<Map<String, dynamic>> sendClientPreferences(
       Map<String, dynamic> preferencesMap) async {
@@ -415,7 +378,8 @@ class ApiService {
       if (response.statusCode == 200) {
         List<dynamic> conversationsJson = response.data;
         _logger.i('Number of conversations received: ${conversationsJson.length}');
-        return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+        // return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+        return [];
       } else if (response.statusCode == 404) {
         _logger.i('No conversations found for user');
         return []; // Return an empty list if no conversations are found

@@ -332,7 +332,6 @@ class _HomePageState extends State<HomePage> {
               border: Border.all(color: Colors.purple, width: 1)),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10), // Add vertical padding
-            padding: const EdgeInsets.symmetric(vertical: 10), // Add vertical padding
             child: Padding(
               padding: const EdgeInsets.all(6.0),
               child: Row(
