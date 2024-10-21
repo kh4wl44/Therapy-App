@@ -14,6 +14,7 @@ import 'Client/NotificationsScreen.dart';
 import 'Client/WriteJournal.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lati_project/api/registration_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   Color backgroundColor = Colors.white.withOpacity(0.92);
   int _selectedIndex = 0; // Track the selected index
   bool hasNewNotifications = false;
+  final RegistrationController _registrationController = Get.find<RegistrationController>();
+  final Logger _logger = Logger();
 
   getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,11 +47,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> logoutUser() async {
-    // Add your backend logout logic here
-    // For example:
-    // await authProvider.logout();
-    // or
-    // await apiService.logout();
+    try {
+      await _registrationController.logout();
+      _logger.i('User logged out successfully');
+      
+      // Clear local user data
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // Navigate to the login screen
+      Get.offAllNamed('/login'); // Replace '/login' with your actual login route
+    } catch (e) {
+      _logger.e('Error during logout: $e');
+      Get.snackbar('Error', 'Failed to log out. Please try again.');
+    }
   }
 
   void _onItemTapped(int index) {
@@ -214,7 +226,6 @@ class _HomePageState extends State<HomePage> {
                   style: GoogleFonts.almarai(
                       fontSize: 20, color: Color(0xff5A3D5C))),
               onTap: () async {
-                // Show the confirmation dialog
                 bool? confirmed = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
@@ -245,14 +256,8 @@ class _HomePageState extends State<HomePage> {
                   },
                 );
 
-                // If the user confirmed, proceed with the logout process
                 if (confirmed ?? false) {
-                  // Perform the backend work for logging out the user
                   await logoutUser();
-
-                  // Navigate to the login screen or perform any other necessary actions
-                  // For example:
-                  // Navigator.of(context).pushReplacementNamed('/login');
                 }
               },
             ),
