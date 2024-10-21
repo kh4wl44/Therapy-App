@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
 import '../../../../api/api_service.dart';
+import '../../../../models/conversation.dart';
 import 'ClientSearchScreen.dart';
 // Import GetX for navigation
 
@@ -19,40 +20,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadConversations();
   }
 
-  Future<void> _loadConversations() async {
-    setState(() {
-      isLoading = true;
-    });
 
-    try {
-      List<Conversation> fetchedConversations = await _apiService.getConversations();
-      setState(() {
-        conversations = fetchedConversations;
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error loading conversations: $e');
-      setState(() {
-        isLoading = false;
-      });
-      Get.snackbar('Error', 'Failed to load conversations');
-    }
-  }
-
-  Future<void> _startNewConversation(String therapistId) async {
-    try {
-      String? conversationId = await _apiService.startConversation(therapistId);
-      if (conversationId != null) {
-        _loadConversations(); // Refresh the conversations list
-      }
-    } catch (e) {
-      print('Error starting conversation: $e');
-      Get.snackbar('Error', 'Failed to start conversation');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +38,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : conversations.isEmpty
-              ? _buildEmptyState()
-              : _buildConversationsList(),
+          ? _buildEmptyState()
+          : _buildConversationsList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Get.to(() => SearchScreen());
+          /*final result = await Get.to(() => SearchScreen());
           if (result != null && result is String) {
-            _startNewConversation(result);
-          }
-        },
+            _startNewConversation(result);*/
+          },
+
         backgroundColor: Colors.purple,
         child: Icon(Icons.add, color: Colors.white),
       ),

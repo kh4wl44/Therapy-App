@@ -18,6 +18,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isLoading = false;
   final ApiService _apiService = Get.find<ApiService>();
 
+
   // Filter options
   String? _selectedGender;
   String? _selectedAvailability;
@@ -35,28 +36,20 @@ class _SearchScreenState extends State<SearchScreen> {
   ]; // Anxiety, Depression
 
   Future<void> _performSearch() async {
-    if (_controller.text.isEmpty) return;
-
     setState(() {
       _isLoading = true;
       _searchResults = []; // Clear previous results
     });
 
-    // final query = _controller.text;
-    // final genderFilter = _selectedGender ?? '';
-    // final availabilityFilter = _selectedAvailability ?? '';
-    // final costFilter = _selectedCost ?? '';
-    // final specialtyFilter = _selectedSpecialty ?? '';
-
     SearchFilters filters = SearchFilters(
-        name: _controller.text,
-        availability: _selectedAvailability,
-        cost: _selectedCost,
-        gender: _selectedGender,
-        specialties: _selectedSpecialty
-      );
+      name: _controller.text,
+      availability: _selectedAvailability,
+      cost: _selectedCost,
+      gender: _selectedGender,
+      specialties: _selectedSpecialty,
+    );
 
-        try {
+    try {
       final results = await _apiService.searchTherapists(filters);
 
       setState(() {
@@ -172,6 +165,13 @@ class _SearchScreenState extends State<SearchScreen> {
                 Navigator.of(context).pop(); // Close dialog
               },
               child: Text('إغلاق', style: GoogleFonts.almarai()),
+            ),
+            ElevatedButton(
+              child: Text('Apply Filters', style: GoogleFonts.almarai()),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                _performSearch(); // Perform search with new filters
+              },
             ),
           ],
         );

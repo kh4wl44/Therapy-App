@@ -155,8 +155,43 @@ class ApiService {
       }
     }
 
+  Future<Map<String, dynamic>> login(UserSignInRequest userSignInRequest) async {
+      final url = '$baseUrl/login';
 
+      final response = await _dio.post(
+        url,
+        options: Options(
+          validateStatus: (status) => status! < 500,
+        ),
+        data: userSignInRequest.toJson(),
+      );
 
+      if (response.statusCode == 200) {
+        final String token = response.data['token'];
+        await _registrationController.saveAuthToken(token);
+        _logger.i('Token saved after login: ${token.isNotEmpty ? "Token present" : "No token"}');
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+        await saveUserInfo(decodedToken['name'], decodedToken['email'],
+            decodedToken['isTherapist'] ?? false);
+        // await checkSavedInfo();
+
+        Get.snackbar("Success", "Login successful");
+        return {'success': true, 'message': 'Signup successful!', 'isTherapist': decodedToken['isTherapist']};
+        // Get.to(() =>
+        //     decodedToken['isTherapist'] ?? false ? TherapistHome() : HomePage);
+        // Navigate to another screen or perform other actions
+      } else {
+        Get.snackbar("Error", "Invalid credentials");
+        return {
+          'success': false,
+          'message': 'Invalid credentials',
+        };
+      }
+    }
+
+  
+  
 
   Future<Map<String, dynamic>> sendClientPreferences(
       Map<String, dynamic> preferencesMap) async {
@@ -309,7 +344,10 @@ class ApiService {
 
     try {
       String token = await _registrationController.getAuthToken();
+      _logger.i('Retrieved token: ${token.isNotEmpty ? "Token present" : "No token"}');
+
       if (token.isEmpty) {
+        _logger.e('No authentication token found');
         throw Exception('No authentication token found');
       }
 
@@ -344,12 +382,55 @@ class ApiService {
         throw Exception('Network error: ${e.message}');
       }
     } catch (error) {
-      _logger.e('Unexpected error in searchTherapists: $error');
+      _logger.e('Unexpected error in startConversation: $error');
       throw Exception('Unexpected error: $error');
     }
   }
 
+   Future<List<Conversation>> getConversations() async {
+    try {
+      String token = await _registrationController.getAuthToken();
+      String userId = await _registrationController.getAuthToken();
+      
+      if (token.isEmpty || userId.isEmpty) {
+        _logger.e('No authentication token or user ID found');
+        throw Exception('Authentication information missing');
+      }
+
+      final String url = '$baseUrl/conversations/$userId';
+
+      _logger.i('Sending GET request to: $url');
+      _logger.i('Authorization token: Present');
+
+      final response = await _dio.get(
+        url,
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        List<dynamic> conversationsJson = response.data;
+        _logger.i('Number of conversations received: ${conversationsJson.length}');
+        return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
+        _logger.i('No conversations found for user');
+        return []; // Return an empty list if no conversations are found
+      } else {
+        _logger.e('Failed to fetch conversations. Status: ${response.statusCode}, Data: ${response.data}');
+        throw Exception('Failed to fetch conversations: ${response.data}');
+      }
+    } catch (e) {
+      _logger.e('Error in getConversations: $e');
+      throw Exception('Error fetching conversations: $e');
+    }
+  }
 }
+
+
 
 class UserPreferences {
   final String userId;

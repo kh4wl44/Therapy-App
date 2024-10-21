@@ -8,9 +8,9 @@ import 'ClientTypes.dart';
 
 class MaleOrFemale extends StatelessWidget {
 
-   final RegistrationController controller = Get.find<RegistrationController>();
+  final RegistrationController controller = Get.find<RegistrationController>();
 
-    MaleOrFemale({super.key});
+  MaleOrFemale({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +91,7 @@ class MaleOrFemale extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                  if (controller.gender.value.isNotEmpty && controller.therapistPreference.value.isNotEmpty) {
+                    if (controller.gender.value.isNotEmpty && controller.therapistPreference.value.isNotEmpty) {
                       Get.to(() => ChooseTopicsToShare());
                     } else {
                       Get.snackbar('Error', 'الرجاء اختيار جنسك وتفضيلك للمعالج');
@@ -136,7 +136,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      
+
       style: ElevatedButton.styleFrom(
         minimumSize: Size(350, 50),
         shape: RoundedRectangleBorder(

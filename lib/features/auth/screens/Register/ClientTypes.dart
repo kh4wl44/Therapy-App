@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../api/registration_controller.dart';
 import 'MaleOrFemale.dart';
 
 class ClientTypes extends StatelessWidget {
+  final RegistrationController controller = Get.find<RegistrationController>();
+
+  ClientTypes({super.key});
+
   @override
   Widget build(BuildContext context) {
+    Get.put(RegistrationController());
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -53,28 +59,32 @@ class ClientTypes extends StatelessWidget {
               CustomButton(
                 title: 'جلسات إنفرادية',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                  controller.updateSessionType('جلسات فردية');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات مخصصة للأزواج',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                  controller.updateSessionType('جلسات للأزواج');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات لطفلي',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                  controller.updateSessionType('جلسات للأطفال');
                 },
               ),
               SizedBox(height: 20),
               CustomButton(
                 title: 'جلسات عائلية',
                 onPressed: () {
-                  // Handle button press
+                  final controller = Get.find<RegistrationController>();
+                  controller.updateSessionType('جلسات عائلية');
                 },
               ),
               const SizedBox(height: 195),

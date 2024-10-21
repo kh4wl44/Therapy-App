@@ -139,12 +139,13 @@ class RegistrationController extends GetxController {
 }
 
   Future<String> getAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token') ?? '';
-    _logger.i('Retrieved token: ${token.isNotEmpty ? token : "No token found"}');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('auth_token') ?? '';
+    print('Retrieved token: ${token.isNotEmpty ? "Token present" : "No token"}');
     return token;
-
   }
+
+
 
 
 
