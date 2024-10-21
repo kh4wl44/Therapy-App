@@ -236,7 +236,7 @@ class SignupState extends State<Signup> {
                   Center(
                     child: TextButton(
                       onPressed: () {
-                        Get.off(HomePage());
+                        Get.off(TherapistHome());
                       },
                       child: Text(
                         'قم بتسجيل الدخول',
