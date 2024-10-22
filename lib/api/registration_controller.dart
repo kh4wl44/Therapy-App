@@ -235,4 +235,16 @@ class RegistrationController extends GetxController {
 
     Get.to(() => LandingPage());
   }
+
+  Future<String> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('user_id') ?? '';
+    if (userId.isEmpty) {
+      _logger.e('User ID not found');
+      throw Exception('User ID not found');
+    }
+    return userId;
+  }
+
+
 }
