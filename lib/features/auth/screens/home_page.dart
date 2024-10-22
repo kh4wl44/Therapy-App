@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> logoutUser() async {
-    // Add your backend logout logic here
+    // Add backend logout logic here
     // For example:
     // await authProvider.logout();
     // or

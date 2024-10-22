@@ -80,7 +80,11 @@ class SignupState extends State<Signup> {
       await checkSavedInfo();
 
       Get.snackbar('Success', result['message']);
-      Get.to(() => ClientTypes());
+      if(widget.isTherapist ?? true) {
+        Get.to(() => TherapistDetails(name: '', details: Details()));
+      } else {
+        Get.to(() => ClientTypes());
+      }
     } else {
       _logger.i('Error response: ${result['message']}');
       Get.snackbar('Error', result['message']);
@@ -200,7 +204,8 @@ class SignupState extends State<Signup> {
                   Center(
                     child: TextButton(
                       onPressed: () {
-                        Get.off(TherapistHome());
+                        Get.to(TherapistHome());
+                        //get to login
                       },
                       child: Text(
                         'قم بتسجيل الدخول',

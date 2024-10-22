@@ -75,7 +75,7 @@ class _LandingPageState extends State<LandingPage> {
                 opacity: _opacity,
                 duration: Duration(seconds: 1), // Duration for fade-out
                 child: Text(
-                  "بلا حواجز",
+                  "بدون حواجز",
                   style: GoogleFonts.almarai(
                     textStyle: TextStyle(fontSize: 50, color: Colors.white),
                   ),

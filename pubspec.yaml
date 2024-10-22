@@ -44,13 +44,14 @@ dependencies:
 
   google_fonts: ^6.2.1
   dio: ^5.7.0
-  jwt_decoder: ^2.0.1
   multi_dropdown: ^3.0.1
+  image_picker: ^1.1.2
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

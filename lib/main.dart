@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         );
       },
       theme: GlobalTheme().getTheme(),
-      home: SearchScreen(),
+      home: LandingPage(),
     );
   }
 }
