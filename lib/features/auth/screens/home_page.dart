@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await _registrationController.logout();
       _logger.i('User logged out successfully');
-      
+
       // Clear local user data
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.clear();
@@ -341,9 +341,9 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  _buildNavItem(Icons.home, 'الرئيسية', 0),
                   _buildNavItem(Icons.search, 'البحث', 1),
                   _buildNavItem(Icons.favorite, 'المفضلة', 2),
-                  _buildNavItem(Icons.home, 'الرئيسية', 0),
                   _buildNavItem(Icons.chat, 'الدردشة', 3),
                   _buildNavItem(Icons.group, 'المواعيد', 4),
                 ],

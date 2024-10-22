@@ -89,7 +89,7 @@ class _ClientProfileState extends State<ClientProfile> {
               ),
               SizedBox(height: 30),
 
-              // زر كتابة يوميات جديدة
+
             ],
           ),
         ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:lati_project/features/auth/screens/Therapist/TherapistClients.dart';
+//import 'ClientSearchScreen.dart'; // Import GetX for navigation
 
-import 'ClientSearchScreen.dart'; // Import GetX for navigation
-
-class ChatsScreen extends StatelessWidget {
+class TherapistChats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Sample chat data
@@ -77,10 +77,10 @@ class ChatsScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => SearchScreen()); // Navigate to SearchScreen
+          Get.to(() => TherapistClients()); // Navigate to SearchScreen
         },
         backgroundColor: Colors.purple,
-        child: Icon(Icons.add, color: Colors.white,),
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }
