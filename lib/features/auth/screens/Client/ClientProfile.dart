@@ -38,7 +38,7 @@ class _ClientProfileState extends State<ClientProfile> {
   void _navigateToJournalScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => JournalScreen(journals: journals),
+        builder: (context) => JournalScreen(),
       ),
     );
   }

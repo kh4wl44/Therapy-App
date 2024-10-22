@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../api/api_service.dart';
 import 'Client/ChatsScreen.dart';
 import 'Client/ClientProfile.dart';
 import 'Client/ClientSearchScreen.dart';
@@ -14,6 +15,7 @@ import 'Client/NotificationsScreen.dart';
 import 'Client/WriteJournal.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lati_project/api/registration_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,6 +30,8 @@ class _HomePageState extends State<HomePage> {
   Color backgroundColor = Colors.white.withOpacity(0.92);
   int _selectedIndex = 0; // Track the selected index
   bool hasNewNotifications = false;
+  final RegistrationController _registrationController = Get.find<RegistrationController>();
+  final Logger _logger = Logger();
 
   getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,11 +48,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> logoutUser() async {
-    // Add backend logout logic here
-    // For example:
-    // await authProvider.logout();
-    // or
-    // await apiService.logout();
+    try {
+      await _registrationController.logout();
+      _logger.i('User logged out successfully');
+
+      // Clear local user data
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // Navigate to the login screen
+      Get.offAllNamed('/login'); // Replace '/login' with your actual login route
+    } catch (e) {
+      _logger.e('Error during logout: $e');
+      Get.snackbar('Error', 'Failed to log out. Please try again.');
+    }
   }
 
   void _onItemTapped(int index) {
@@ -194,9 +207,7 @@ class _HomePageState extends State<HomePage> {
                     GoogleFonts.almarai(fontSize: 20, color: Color(0xff5A3D5C)),
               ),
               onTap: () {
-                Get.to(() => JournalScreen(
-                      journals: [],
-                    ));
+                Get.to(() => JournalScreen());
               },
             ),
             ListTile(
@@ -214,7 +225,6 @@ class _HomePageState extends State<HomePage> {
                   style: GoogleFonts.almarai(
                       fontSize: 20, color: Color(0xff5A3D5C))),
               onTap: () async {
-                // Show the confirmation dialog
                 bool? confirmed = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
@@ -245,14 +255,8 @@ class _HomePageState extends State<HomePage> {
                   },
                 );
 
-                // If the user confirmed, proceed with the logout process
                 if (confirmed ?? false) {
-                  // Perform the backend work for logging out the user
                   await logoutUser();
-
-                  // Navigate to the login screen or perform any other necessary actions
-                  // For example:
-                  // Navigator.of(context).pushReplacementNamed('/login');
                 }
               },
             ),
@@ -386,25 +390,35 @@ class MoodRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         MoodIconButton(
-            icon: Icons.insert_emoticon,
-            label: 'سعيد',
-            color: Color(0xFF4CBD57)),
+          icon: Icons.insert_emoticon,
+          label: 'سعيد',
+          color: Color(0xFF4CBD57),
+          moodIcon: MoodIcon.HAPPY,
+        ),
         MoodIconButton(
-            icon: Icons.sentiment_satisfied,
-            label: 'جيد',
-            color: Color(0xFFFFB300)),
+          icon: Icons.sentiment_satisfied,
+          label: 'جيد',
+          color: Color(0xFFFFB300),
+          moodIcon: MoodIcon.NEUTRAL,
+        ),
         MoodIconButton(
-            icon: Icons.sentiment_neutral,
-            label: 'معتدل',
-            color: Color(0xFFF36A92)),
+          icon: Icons.sentiment_neutral,
+          label: 'معتدل',
+          color: Color(0xFFF36A92),
+          moodIcon: MoodIcon.NEUTRAL,
+        ),
         MoodIconButton(
-            icon: Icons.sentiment_dissatisfied,
-            label: 'غاضب',
-            color: Color(0xFFFF0000)),
+          icon: Icons.sentiment_dissatisfied,
+          label: 'غاضب',
+          color: Color(0xFFFF0000),
+          moodIcon: MoodIcon.ANGRY,
+        ),
         MoodIconButton(
-            icon: Icons.sentiment_very_dissatisfied,
-            label: 'حزين',
-            color: Color(0xFF4278A4)),
+          icon: Icons.sentiment_very_dissatisfied,
+          label: 'حزين',
+          color: Color(0xFF4278A4),
+          moodIcon: MoodIcon.SAD,
+        ),
       ],
     );
   }
@@ -414,10 +428,17 @@ class MoodIconButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
+  final MoodIcon moodIcon;
 
-  MoodIconButton(
-      {required this.icon, required this.label, required this.color});
+  MoodIconButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.moodIcon,
+  });
+
   final Logger _logger = Logger();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -428,8 +449,8 @@ class MoodIconButton extends StatelessWidget {
           IconButton(
             icon: Icon(icon, size: 45, color: color),
             onPressed: () {
-              Get.to(WriteJournal());
-              print('$label button pressed');
+              Get.to(() => JournalScreen(initialMood: moodIcon));
+              _logger.i('$label button pressed');
             },
           ),
           Text(label,

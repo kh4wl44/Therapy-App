@@ -154,7 +154,7 @@ class ApiService {
           'message': 'Invalid credentials',
         };
       }
-    }  
+    }
 
   Future<Map<String, dynamic>> sendClientPreferences(
       Map<String, dynamic> preferencesMap) async {
@@ -354,7 +354,7 @@ class ApiService {
     try {
       String token = await _registrationController.getAuthToken();
       String userId = await _registrationController.getAuthToken();
-      
+
       if (token.isEmpty || userId.isEmpty) {
         _logger.e('No authentication token or user ID found');
         throw Exception('Authentication information missing');
@@ -392,6 +392,175 @@ class ApiService {
       throw Exception('Error fetching conversations: $e');
     }
   }
+
+  Future<Map<String, dynamic>> bookSession(BookSessionRequest request) async {
+    const String url = '$baseUrl/book-session';
+
+    try {
+      String token = await _registrationController.getAuthToken();
+      if (token.isEmpty) {
+        _logger.e('No authentication token found');
+        return {
+          'success': false,
+          'message': 'No authentication token found',
+        };
+      }
+
+      _logger.i('Sending book session request to: $url');
+      _logger.i('Request data: ${request.toJson()}');
+
+      final response = await _dio.post(
+        url,
+        data: request.toJson(),
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+          validateStatus: (status) => true, // Allow all status codes
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+      _logger.i('Response data: ${response.data}');
+
+      switch (response.statusCode) {
+        case 201:
+          return {
+            'success': true,
+            'message': 'Session booked successfully',
+            'session': response.data,
+          };
+        case 402:
+          return {
+            'success': false,
+            'message': 'Payment failed. Please try again.',
+            'statusCode': response.statusCode,
+          };
+        case 409:
+          return {
+            'success': false,
+            'message': 'Therapist is not available at the requested time.',
+            'statusCode': response.statusCode,
+          };
+        default:
+          String errorMessage = 'Failed to book session';
+          if (response.data is Map<String, dynamic>) {
+            errorMessage = response.data['message'] ?? errorMessage;
+          }
+          return {
+            'success': false,
+            'message': errorMessage,
+            'statusCode': response.statusCode,
+            'responseData': response.data,
+          };
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException: ${e.toString()}');
+      _logger.e('DioException response: ${e.response}');
+      return {
+        'success': false,
+        'message': 'Network error: ${e.message}',
+        'statusCode': e.response?.statusCode,
+        'responseData': e.response?.data,
+      };
+    } catch (error) {
+      _logger.e('Unexpected error: $error');
+      return {
+        'success': false,
+        'message': 'Unexpected error: $error',
+      };
+    }
+  }
+Future<Map<String, dynamic>> addJournalEntry(JournalEntry entry) async {
+  const String url = '$baseUrl/journal/entry';
+
+  try {
+    String token = await _registrationController.getAuthToken();
+    if (token.isEmpty) {
+      return {
+        'success': false,
+        'message': 'No authentication token found',
+      };
+    }
+
+    _logger.i('Sending journal entry to: $url');
+    _logger.i('Journal entry data: ${entry.toJson()}');
+
+    final response = await _dio.post(
+      url,
+      data: entry.toJson(),
+      options: Options(
+        headers: {'Authorization': 'Bearer $token'},
+        validateStatus: (status) => status! < 500,
+      ),
+    );
+
+    _logger.i('Response status code: ${response.statusCode}');
+    _logger.i('Response data: ${response.data}');
+
+    if (response.statusCode == 201) {
+      return {
+        'success': true,
+        'message': 'Journal entry added successfully',
+      };
+    } else {
+      return {
+        'success': false,
+        'message': 'Failed to add journal entry: ${response.data}',
+        'statusCode': response.statusCode,
+      };
+    }
+  } catch (error) {
+    _logger.e('Unexpected error: $error');
+    return {
+      'success': false,
+      'message': 'Unexpected error: $error',
+    };
+  }
+}
+
+Future<Map<String, dynamic>> getJournalEntries() async {
+  const String url = '$baseUrl/journal/entries';
+
+  try {
+    String token = await _registrationController.getAuthToken();
+    if (token.isEmpty) {
+      return {
+        'success': false,
+        'message': 'No authentication token found',
+      };
+    }
+
+    final response = await _dio.get(
+      url,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token'},
+        validateStatus: (status) => status! < 500,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      List<JournalEntry> entries = (response.data as List)
+          .map((json) => JournalEntry.fromJson(json))
+          .toList();
+      return {
+        'success': true,
+        'entries': entries,
+      };
+    } else {
+      return {
+        'success': false,
+        'message': 'Failed to fetch journal entries: ${response.data}',
+        'statusCode': response.statusCode,
+      };
+    }
+  } catch (error) {
+    _logger.e('Unexpected error: $error');
+    return {
+      'success': false,
+      'message': 'Unexpected error: $error',
+    };
+  }
+}
+
 }
 
 
@@ -572,3 +741,92 @@ class SearchFilters {
     if (gender != null) 'gender': gender,
   };
 }
+
+class BookSessionRequest {
+  final String clientId;
+  final String therapistId;
+  final DateTime sessionDateTime;
+  final int duration;
+  final double cost;
+
+  BookSessionRequest({
+    required this.clientId,
+    required this.therapistId,
+    required this.sessionDateTime,
+    required this.duration,
+    required this.cost,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'clientId': clientId,
+      'therapistId': therapistId,
+      'sessionDateTime': sessionDateTime.toIso8601String(),
+      'duration': duration,
+      'cost': cost,
+    };
+  }
+}
+
+
+class JournalEntry {
+  final String entryId;
+  final String userId;
+  final MoodIcon moodIcon;
+  final String date;
+  final String hour;
+  final List<String> emotions;
+  final String title;
+  final String content;
+
+  JournalEntry({
+    this.entryId = '',
+    this.userId = '',
+    required this.moodIcon,
+    required this.date,
+    required this.hour,
+    required this.emotions,
+    required this.title,
+    required this.content,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'entryId': entryId,
+      'userId': userId,
+      'moodIcon': moodIcon.toString().split('.').last,
+      'date': date,
+      'hour': hour,
+      'emotions': emotions,
+      'title': title,
+      'content': content,
+    };
+  }
+
+  factory JournalEntry.fromJson(Map<String, dynamic> json) {
+    return JournalEntry(
+      entryId: json['entryId'],
+      userId: json['userId'],
+      moodIcon: MoodIcon.values.firstWhere(
+        (e) => e.toString().split('.').last == json['moodIcon'],
+        orElse: () => MoodIcon.NEUTRAL,
+      ),
+      date: json['date'],
+      hour: json['hour'],
+      emotions: List<String>.from(json['emotions']),
+      title: json['title'],
+      content: json['content'],
+    );
+  }
+}
+
+enum MoodIcon {
+  HAPPY,
+  SAD,
+  ANGRY,
+  NEUTRAL,
+  ANXIOUS
+}
+
+
+

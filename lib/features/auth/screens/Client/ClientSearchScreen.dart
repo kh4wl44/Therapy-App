@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:lati_project/api/api_service.dart';
+import 'package:lati_project/features/auth/screens/Client/BookSessionTest.dart';
 import 'dart:convert';
 
 import 'package:multi_dropdown/multi_dropdown.dart';
@@ -322,21 +323,51 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (context, index) {
                     final TherapistDetails item = _searchResults[index];
                     return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8.0),
-                      child: ListTile(
-                        title: Text(item.name,
-                            style: GoogleFonts.almarai(
-                                fontSize:
-                                    18)), // Adjust based on your data structure
-                        subtitle: Text(
-                         'AUTO DESCRIPTION', // Adjust based on your data structure
-                          style: GoogleFonts.almarai(
-                              textStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 14)),
+                      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                      elevation: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.name,
+                              style: GoogleFonts.almarai(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'التخصص: ${item.details.specialty ?? 'غير محدد'}',
+                              style: GoogleFonts.almarai(fontSize: 14),
+                            ),
+                            Text(
+                              'الخبرة: ${item.details.experience ?? 'غير محدد'} سنوات',
+                              style: GoogleFonts.almarai(fontSize: 14),
+                            ),
+                            Text(
+                              'التكلفة: ${item.details.cost ?? 'غير محدد'} دينار',
+                              style: GoogleFonts.almarai(fontSize: 14),
+                            ),
+                            SizedBox(height: 8),
+                            Wrap(
+                              spacing: 4,
+                              children: (item.details.issuesTreated ?? []).map((issue) => Chip(
+                                label: Text(issue, style: GoogleFonts.almarai(fontSize: 12)),
+                                backgroundColor: Colors.purple.withOpacity(0.1),
+                              )).toList(),
+                            ),
+                            SizedBox(height: 8),
+                            ElevatedButton(
+                              child: Text("حجز موعد", style: GoogleFonts.almarai()),
+                              onPressed: () {
+                                // TODO: Navigate to therapist profile
+                                //Get.to(() => BookSessionTest(therapistId: item.details.sId ?? ''));
+                              },
+                            ),
+                          ],
                         ),
-                        onTap: () {
-                          // Handle tap on search result
-                        },
                       ),
                     );
                   },

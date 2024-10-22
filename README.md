@@ -1,16 +1,3 @@
-# lati_project
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+بدون حواجز هو تطبيق علاج نفسي أونلاين يمكن العميل من التواصل مع اختصاصيين نفسيين، حجز موعد ودردشة. 
+الفئة المستهدفة: الأشخاص الذين يعانون من مشاكل نفسية/اجتماعية أو يحتاجون لاستشارة، والمعالجون النفسيون.
+الهدف من التطبيق هو كسر وصمة العار وجعل التواصل مع مختص أسهل وأكثر راحة وخصوصية.

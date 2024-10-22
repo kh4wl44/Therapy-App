@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:lati_project/features/auth/screens/Register/landingpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:lati_project/api/api_service.dart';
@@ -196,5 +197,54 @@ class RegistrationController extends GetxController {
     therapistDetails.value = null;
     _logger.i('Cleared therapist details');
   }
-}
 
+  Future<void> logout() async {
+    try {
+      await _clearAllData();
+      _logger.i('User logged out successfully');
+      Get.snackbar('Success', 'Logged out successfully');
+      // Navigate to login screen or initial screen
+      // Get.offAll(() => LoginScreen());
+    } catch (e) {
+      _logger.e('Error during logout: $e');
+      Get.snackbar('Error', 'Failed to log out. Please try again.');
+    }
+  }
+
+  Future<void> _clearAllData() async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    // Clear all SharedPreferences data
+    await prefs.clear();
+
+    // Reset all observable variables
+    sessionType.value = '';
+    gender.value = '';
+    therapistPreference.value = '';
+    languagePreference.value = '';
+    topics.clear();
+    therapistDetails.value = null;
+
+    // Clear auth token
+    await prefs.remove('auth_token');
+
+    // Clear registration status
+    await prefs.remove('registration_complete');
+
+    _logger.i('All user data cleared');
+
+    Get.to(() => LandingPage());
+  }
+
+  Future<String> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('user_id') ?? '';
+    if (userId.isEmpty) {
+      _logger.e('User ID not found');
+      throw Exception('User ID not found');
+    }
+    return userId;
+  }
+
+
+}
