@@ -7,6 +7,7 @@ import 'package:lati_project/api/registration_controller.dart';
 import 'package:lati_project/features/auth/screens/Register/common.dart';
 import 'package:lati_project/features/auth/screens/Therapist/TherapistHome.dart';
 import 'package:lati_project/features/auth/screens/home_page.dart';
+import 'package:lati_project/models/conversation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:lati_project/features/auth/screens/Register/chooseTopicsToShare.dart';
@@ -153,10 +154,7 @@ class ApiService {
           'message': 'Invalid credentials',
         };
       }
-    }
-
-
-
+    }  
 
   Future<Map<String, dynamic>> sendClientPreferences(
       Map<String, dynamic> preferencesMap) async {
@@ -309,7 +307,10 @@ class ApiService {
 
     try {
       String token = await _registrationController.getAuthToken();
+      _logger.i('Retrieved token: ${token.isNotEmpty ? "Token present" : "No token"}');
+
       if (token.isEmpty) {
+        _logger.e('No authentication token found');
         throw Exception('No authentication token found');
       }
 
@@ -344,12 +345,56 @@ class ApiService {
         throw Exception('Network error: ${e.message}');
       }
     } catch (error) {
-      _logger.e('Unexpected error in searchTherapists: $error');
+      _logger.e('Unexpected error in startConversation: $error');
       throw Exception('Unexpected error: $error');
     }
   }
 
+   Future<List<Conversation>> getConversations() async {
+    try {
+      String token = await _registrationController.getAuthToken();
+      String userId = await _registrationController.getAuthToken();
+      
+      if (token.isEmpty || userId.isEmpty) {
+        _logger.e('No authentication token or user ID found');
+        throw Exception('Authentication information missing');
+      }
+
+      final String url = '$baseUrl/conversations/$userId';
+
+      _logger.i('Sending GET request to: $url');
+      _logger.i('Authorization token: Present');
+
+      final response = await _dio.get(
+        url,
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      _logger.i('Response status code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        List<dynamic> conversationsJson = response.data;
+        _logger.i('Number of conversations received: ${conversationsJson.length}');
+        // return conversationsJson.map((json) => Conversation.fromJson(json)).toList();
+        return [];
+      } else if (response.statusCode == 404) {
+        _logger.i('No conversations found for user');
+        return []; // Return an empty list if no conversations are found
+      } else {
+        _logger.e('Failed to fetch conversations. Status: ${response.statusCode}, Data: ${response.data}');
+        throw Exception('Failed to fetch conversations: ${response.data}');
+      }
+    } catch (e) {
+      _logger.e('Error in getConversations: $e');
+      throw Exception('Error fetching conversations: $e');
+    }
+  }
 }
+
+
 
 class UserPreferences {
   final String userId;

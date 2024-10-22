@@ -2,13 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'Client/ChatsScreen.dart';
 import 'Client/ClientProfile.dart';
+import 'Client/ClientSearchScreen.dart';
 import 'Client/ClientSessions.dart';
 import 'Client/FavoritesScreen.dart';
 import 'Client/JournalsScreen.dart';
 import 'Client/NotificationsScreen.dart';
-import 'Client/ClientSearchScreen.dart';
+
 import 'Client/WriteJournal.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,10 +23,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Logger _logger = Logger();
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>(); // Key for the scaffold
-  String username = '';
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Key for the scaffold
+  String username = "";
   Color backgroundColor = Colors.white.withOpacity(0.92);
   int _selectedIndex = 0; // Track the selected index
   bool hasNewNotifications = false;
@@ -153,6 +153,18 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.only(top: 50),
           children: <Widget>[
+            // DrawerHeader(
+            //   decoration: BoxDecoration(
+            //     color: Color(0xffF4D7F4),
+            //   ),
+            //   child: Text(
+            //     'القائمة',
+            //     style: GoogleFonts.almarai(textStyle: TextStyle(
+            //       color: Colors.black,
+            //       fontSize: 24,
+            //     ),)
+            //   ),
+            // ),
             ListTile(
               title: Text(
                 'الصفحة الشخصية',
@@ -260,11 +272,11 @@ class _HomePageState extends State<HomePage> {
                 child: GestureDetector(
                   onTap: () {
                     Get.to(WriteJournal());
-                    _logger.i("Container tapped!");
+                    print("Container tapped!");
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color(0x80F3E5F8),
+                      color: Color(0xffF6F3B2),
                       borderRadius: BorderRadius.all(Radius.circular(30)),
                     ),
                     child: Column(
@@ -319,8 +331,7 @@ class _HomePageState extends State<HomePage> {
                   bottom: Radius.circular(50)), // Radius for the top corners
               border: Border.all(color: Colors.purple, width: 1)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical: 10), // Add vertical padding
+            padding: const EdgeInsets.symmetric(vertical: 10), // Add vertical padding
             child: Padding(
               padding: const EdgeInsets.all(6.0),
               child: Row(
@@ -418,7 +429,7 @@ class MoodIconButton extends StatelessWidget {
             icon: Icon(icon, size: 45, color: color),
             onPressed: () {
               Get.to(WriteJournal());
-              _logger.i('$label button pressed');
+              print('$label button pressed');
             },
           ),
           Text(label,
