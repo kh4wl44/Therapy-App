@@ -7,9 +7,8 @@ import 'package:lati_project/api/api_service.dart';
 import 'TherapistHome.dart';
 
 class TherapistDetails extends StatefulWidget {
-  late final String name;
-  late final Details details;
-  TherapistDetails({Key? key, required this.name, required this.details}) : super(key: key);
+ 
+  TherapistDetails({Key? key,}) : super(key: key);
 
   @override
   State<TherapistDetails> createState() => _TherapistDetailsState();

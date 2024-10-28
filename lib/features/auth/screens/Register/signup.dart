@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:lati_project/api/api_service.dart';
+import 'package:lati_project/api/api_service.dart' as api_service;
 import 'package:lati_project/features/auth/screens/Register/ClientTypes.dart';
 import 'package:lati_project/features/auth/screens/Register/common.dart';
 import '../Therapist/TherapistHome.dart';
@@ -9,6 +9,9 @@ import '../home_page.dart';
 import 'login.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import  'package:lati_project/features/auth/screens/Therapist/TherapistDetails.dart';  // Change this line
+
+
 
 class Signup extends StatefulWidget {
   final bool? isTherapist;
@@ -27,12 +30,12 @@ class SignupState extends State<Signup> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  late final ApiService _apiService;
+  late final api_service.ApiService _apiService;
 
   @override
   void initState() {
     super.initState();
-    _apiService = Get.find<ApiService>();
+    _apiService = Get.find<api_service.ApiService>();
   }
 
   Future<void> checkSavedInfo() async {
@@ -62,7 +65,7 @@ class SignupState extends State<Signup> {
       Get.snackbar('Error', 'الرجاء إدخال عنوان بريد إلكتروني صالح');
     }
 
-    final userRequest = UserSignUpRequest(
+    final userRequest = api_service.UserSignUpRequest(
       name: usernameController.text, // Assuming username is used as name
       username: usernameController.text,
       email: emailController.text,
@@ -74,15 +77,17 @@ class SignupState extends State<Signup> {
     final result = await _apiService.signupUser(userRequest);
 
     if (result['success']) {
-      _logger.i('signup success, attempting to save user info');
-      await saveUserInfo(    usernameController.text, emailController.text,
-          widget.isTherapist ?? false);
-      await checkSavedInfo();
+      _logger.i(
+          'Signup successful, isTherapist value: ${widget.isTherapist}'); // Debug print
 
       Get.snackbar('Success', result['message']);
-      if(widget.isTherapist ?? true) {
-        Get.to(() => TherapistDetails(name: '', details: Details()));
+
+      // Force the value to be explicitly checked against true
+      if (widget.isTherapist == true) {
+        _logger.i('Navigating to TherapistDetails'); // Debug print
+        Get.to(() => TherapistDetails());
       } else {
+        _logger.i('Navigating to ClientTypes'); // Debug print
         Get.to(() => ClientTypes());
       }
     } else {
